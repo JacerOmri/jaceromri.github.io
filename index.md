@@ -1,7 +1,7 @@
 ---
 layout: page
-title: Hello World!
-tagline: Supporting tagline
+title: Jacer Omri Blog
+tagline: blogging for roots
 ---
 {% include JB/setup %}
 
