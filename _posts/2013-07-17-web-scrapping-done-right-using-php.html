@@ -1,0 +1,60 @@
+---
+layout: post
+title: Web scraping done right using PHP
+categories:
+- Tutorials
+tags:
+- Google Chrome
+- HTML element
+- imdb
+- PHP
+- scrapping
+- Web page
+status: publish
+type: post
+published: true
+meta:
+  twitter_cards_summary_img_size: a:6:{i:0;i:872;i:1;i:585;i:2;i:3;i:3;s:24:"width="872"
+    height="585"";s:4:"bits";i:8;s:4:"mime";s:9:"image/png";}
+  geo_public: '0'
+  _publicize_pending: '1'
+  _zemanta_has_recommendations: '1'
+  _wpas_mess: ! 'Web scrapping done right using #PHP http://wp.me/p3JwxB-1A'
+  _wpas_done_4060388: '1'
+  _publicize_done_external: a:1:{s:8:"facebook";a:1:{i:100003508657658;b:1;}}
+  publicize_twitter_user: JacerOmri
+  _wpas_done_4060389: '1'
+  _wpas_done_4060390: '1'
+  _wpas_done_4060391: '1'
+  _thumbnail_id: '109'
+  tagazine-media: a:7:{s:7:"primary";s:58:"http://jacerdass.files.wordpress.com/2013/07/inspector.png";s:6:"images";a:1:{s:58:"http://jacerdass.files.wordpress.com/2013/07/inspector.png";a:6:{s:8:"file_url";s:58:"http://jacerdass.files.wordpress.com/2013/07/inspector.png";s:5:"width";i:872;s:6:"height";i:585;s:4:"type";s:5:"image";s:4:"area";i:510120;s:9:"file_path";b:0;}}s:6:"videos";a:0:{}s:11:"image_count";i:1;s:6:"author";s:8:"24772033";s:7:"blog_id";s:8:"55178859";s:9:"mod_stamp";s:19:"2013-07-17
+    09:14:58";}
+  _wpas_skip_4060388: '1'
+  _wpas_skip_4060389: '1'
+  _wpas_skip_4060390: '1'
+  _wpas_skip_4060391: '1'
+author: 
+---
+<p>The art of gathering information is now made easy these days thanks to web services and <a class="zem_slink" title="Application programming interface" href="http://en.wikipedia.org/wiki/Application_programming_interface" target="_blank" rel="wikipedia">APIs</a>. But they don't cover everything, and that is why scrapping is a must. It is not easy to do it, given that there are many ways to do it and that <a class="zem_slink" title="Web page" href="http://en.wikipedia.org/wiki/Web_page" target="_blank" rel="wikipedia">web pages</a> are not the same. Today i am going to show you the right way to scrap and extract any information from any website.<!--more--></p>
+<p>First thing to do in order to write a website scraper is to analyse a number of web pages seeking for a pattern. I do this using <a class="zem_slink" title="Chrome" href="http://web-browsers.findthebest.com/l/3/Chrome" target="_blank" rel="fdbsoftware">Google Chrome</a>'s developer tools. Then I write a piece of code that follows this pattern and extract the data. It may seem simple, but it is not. I have tried many ways like using parsing the web page as a Dom document and traverse it using <a class="zem_slink" title="XPath" href="http://en.wikipedia.org/wiki/XPath" target="_blank" rel="wikipedia">XPath</a> etc.  But i couldn't do much with it, it is just not that efficient. So i moved on to use <a class="zem_slink" title="Regular expression" href="http://en.wikipedia.org/wiki/Regular_expression" target="_blank" rel="wikipedia">Regex</a>, it gave me quite more options and broader limits, but it is not structure aware, I mean it hard to handle it when things become too complicated. The best way i have found so far is <a class="zem_slink" title="JQuery" href="http://jquery.com" target="_blank" rel="homepage">jQuery</a>-like <a class="zem_slink" title="Cascading Style Sheets" href="http://en.wikipedia.org/wiki/Cascading_Style_Sheets" target="_blank" rel="wikipedia">CSS</a> selectors!  Yes I am talking about <a class="zem_slink" title="PHP" href="http://en.wikipedia.org/wiki/PHP" target="_blank" rel="wikipedia">PHP</a>. I  was seeking for new options when i found the <a href="http://pqlite.com/" target="_blank">PQLite project</a>. I want talk any longer, instead, I will move to the coding part!</p>
+<p>Let's say we want to get the poster image of any given movie, having its imdb id. So we open this page and analyse it</p>
+<pre><a href="http://www.imdb.com/title/tt1821694/">http://www.imdb.com/title/tt1821694/</a></pre>
+<p>Then we inspect the poster image, right click on the poster and choose "inspect element"</p>
+<p style="text-align:center;"><a href="http://jacerdass.files.wordpress.com/2013/07/inspector.png"><img class="size-large wp-image-104 aligncenter" alt="inspector" src="http://jacerdass.files.wordpress.com/2013/07/inspector.png?w=700" width="700" height="469" /></a></p>
+<p>the selected tag is our poster image. Let's analyse the hierarchy in which our element is found: a div with "image" class, a td with "img_primary" id and another div with "title-overview-widget" id. This should be enough to clearly and uniquely identify the poster image. If you are already familiar with jQuery, you should know that class names are prepended by a dot, while id names are prepended with a hashtag. Lets open the <a class="zem_slink" title="JavaScript" href="http://en.wikipedia.org/wiki/JavaScript" target="_blank" rel="wikipedia">javascript console</a> in the browser and write the following:</p>
+<pre>$("#title-overview-widget #img_primary .image img")</pre>
+<p>Hurray!  This line of code did give us the right element that holds our poster image. Now we are sure that we have the right jQuery selector. Let's move to the PHP part,  Go ahead and <a href="http://pqlite.com/" target="_blank">PQLite Project</a> and  create a new php file within your (local) server and type the following:</p>
+<pre>&lt;!--?php
+$imdb_id = "tt1821694";
+$imdb_url = 'http://www.imdb.com/title/'. $imdb_id . '/';
+include "PQLite.php";
+$pq = new PQLite(file_get_contents($imdb_url));
+echo $pq-&gt;find("#title-overview-widget #img_primary .image img")
+?&gt;</pre>
+<p>This code echoes out the element that holds the poster image. it gives</p>
+<pre>TagArray Object [you may find methods associated with it at http://pqlite.com/docs/]</pre>
+<p>Something is wrong, right? this is because we tried to echo out a <a class="zem_slink" title="HTML element" href="http://en.wikipedia.org/wiki/HTML_element" target="_blank" rel="wikipedia">list of html tags</a>, at least that is how PQLite treats it. We are sure that we will get a unique element. Besides, we want to have only the src attribute. So we change the last line of code with the following</p>
+<pre>echo $pq-&gt;find("#title-overview-widget #img_primary .image img")-&gt;get(0)-&gt;getAttr("src");</pre>
+<p>That should echo out a url like this</p>
+<pre>http://ia.media-imdb.com/images/M/MV5BMjI2ODQ4ODY3Nl5BMl5BanBnXkFtZTcwNTc2NzE1OQ@@._V1_SX214_.jpg</pre>
+<p>Yeah we have do it right and easy! Go ahead and change the imdb_id to any other movie id and watch how these few lines can work on any imdb page. Of course you can go further with this and make a lot of more useful examples. You may share your work with us. Follow me for more various tricks and tutorials!</p>

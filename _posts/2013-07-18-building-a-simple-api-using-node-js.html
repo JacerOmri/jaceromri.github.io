@@ -1,0 +1,175 @@
+---
+layout: post
+title: Building a simple API using node.js
+categories:
+- Tutorials
+tags:
+- api
+- Application programming interface
+- curl
+- JavaScript
+- MongoDB
+- mongoose
+- Node.js
+- restify
+status: publish
+type: post
+published: true
+meta:
+  geo_public: '0'
+  _thumbnail_id: '118'
+  _publicize_pending: '1'
+  _zemanta_has_recommendations: '1'
+  _wpas_done_4060388: '1'
+  _wpas_mess: ! 'Building a simple #API using #NodeJS http://wp.me/p3JwxB-1N #WebDevelopment
+    #WebApps'
+  _publicize_done_external: a:1:{s:8:"facebook";a:1:{i:100003508657658;b:1;}}
+  publicize_twitter_user: JacerOmri
+  _wpas_done_4060389: '1'
+  _wpas_done_4060390: '1'
+  _wpas_done_4060391: '1'
+  publicize_reach: a:4:{s:7:"twitter";a:1:{i:4060389;i:142;}s:2:"fb";a:1:{i:4060388;i:453;}s:6:"tumblr";a:1:{i:4060391;i:5;}s:2:"wp";a:1:{i:0;i:6;}}
+  _wpas_skip_4060388: '1'
+  _wpas_skip_4060389: '1'
+  _wpas_skip_4060390: '1'
+  _wpas_skip_4060391: '1'
+author: 
+---
+<p>I have already introduced node.js in <a href="http://jacerdass.wordpress.com/2013/07/14/introduction-to-node-js/">a previous article</a> and explained how to install it in <a href="http://jacerdass.wordpress.com/2013/07/15/node-js-first-steps/">another one</a>. Now it is time to go further with it. Basically what we will try to do today is to create a basic yet functional API <a class="zem_slink" title="Server (computing)" href="http://en.wikipedia.org/wiki/Server_%28computing%29" target="_blank" rel="wikipedia">server</a> using node.js along with <strong>restify</strong> and <a class="zem_slink" title="Mongoose" href="http://en.wikipedia.org/wiki/Mongoose" target="_blank" rel="wikipedia">mongoose</a>, which are two modules.<!--more--></p>
+<p>First thing is, we have to understand what a module is. That is quite simple, a module is a packaged code that delivers a functionality using reachable (exported) functions. <strong>Restify</strong>, for instance, helps creating <a class="zem_slink" title="Representational state transfer" href="http://en.wikipedia.org/wiki/Representational_state_transfer" target="_blank" rel="wikipedia">RESTful</a> <a class="zem_slink" title="Application programming interface" href="http://en.wikipedia.org/wiki/Application_programming_interface" target="_blank" rel="wikipedia">APIs</a> easily, while <strong>mongoose</strong> is a <a class="zem_slink" title="MongoDB" href="http://www.mongodb.org/" target="_blank" rel="homepage">MongoDB</a> driver. Node.js provides a handful tool to deal with modules, like installing and removing, it is <strong>npm. </strong>so go ahead and install those two modules, type in terminal:</p>
+<pre>npm install restify mongoose</pre>
+<p>Yes, it is that easy! Now we have <strong>restify</strong> and <strong>mongoose</strong> installed, let's start coding. Create a new directory and step into it, create an app.js file and write the following</p>
+<pre>var restify = require('restify')
+ , mongoose = require('mongoose');</pre>
+<p>these two lines actually load the modules, thanks to the <strong>require()</strong> function, and assign them to two different variables. Next step is to create a server</p>
+<pre>var server = restify.createServer({ name: 'mongo-api' })
+ server.listen(7000, function () {
+ console.log('%s listening at %s', server.name, server.url)
+})</pre>
+<p>Go ahead and try it, type</p>
+<pre>node app.js</pre>
+<p>you will see something like</p>
+<pre>mongo-api listening at http://0.0.0.0:7000</pre>
+<p>This indicates that our server is up and running, good isn't it? But it is quite useless since we have not defined any routine yet. Before, we have to connect to <strong>MongoDB</strong> and define our model. For example we can make a user model having 3 properties:</p>
+<ul>
+<li>Email</li>
+<li>First Name</li>
+<li>Last Name</li>
+</ul>
+<p>Pretty simple and easy</p>
+<pre>db = mongoose.connect("mongodb://localhost/example-api");
+var Schema = mongoose.Schema,
+ ObjectId = Schema.ObjectID;
+var User = new Schema({
+ email: {
+  type: String,
+  required: true,
+  trim: true
+ },
+ fname: {
+  type: String,
+  required: false,
+  trim: true
+ },
+ lname: {
+  type: String,
+  required: false,
+  trim: true
+ },
+});
+var User = mongoose.model('User', User);</pre>
+<p>This should be enough to connect to the database and define our User model. There is an extra tweak to the server to enable the default headers for the system using <strong>fullResponse()</strong> and <strong>bodyParser()</strong> to remap the body content of a request to the req.params variable, allowing both <strong>GET</strong> and <strong>POST</strong>/<strong>PUT</strong> routes to use the same interface, fairly handy when you want to re-use code. Go ahead and apply them</p>
+<pre>server
+ .use(restify.fullResponse())
+ .use(restify.bodyParser())</pre>
+<p>We have now the server setup and ready, along with its database part. But we still need routines to define the behaviour of the API. Our first routine, is to grab all the records in the database when the user emits a <strong>GET</strong> request to <strong>/user</strong></p>
+<pre>server.get('/user', function (req, res, next) {
+ User.find({}, function (error, users) {
+ res.send(users)
+ })
+})</pre>
+<p>To test this, we need to run the application and use curl to interact with it</p>
+<pre>curl -i http://localhost:7000/user</pre>
+<p>Since our database is still empty, this request should return something like [] indicating that nothing is found there. The next required routine is the post, where a request is able to add a record</p>
+<pre>server.post('/user', function (req, res, next) {
+ if (req.params.email === undefined) {
+  return next(new restify.InvalidArgumentError('Email must be supplied'))
+ }
+ var userData = {
+  email: req.params.email,
+  fname: req.params.fname,
+  lname: req.params.lname
+ }
+ var user = new User(userData);
+ user.save(function (error, data) {
+  if (error) {
+   return next(new restify.InvalidArgumentError(JSON.stringify(error.errors)))
+  }
+  else {
+   res.json(data);
+  }
+  res.send(201, user)
+ })
+})</pre>
+<p>It is a bit more complicated than the first routine but it is not that hard. It just accepts the <strong>POST</strong> request map it into an object and save it into the database. We are doing a very basic verification step where we check for the email is already set in the request body. Let's test this!</p>
+<pre>curl -i -X POST -d '{ "email": "mail@jacer.info", "fname": "Jacer", "lname": "Omri" } ' http://localhost:7000/user</pre>
+<p>after successfully processing the request, the server would return this</p>
+<pre>{
+ __v: 0
+ email: "jokerhacker.jacer@gmail.com"
+ fname: "Jacer"
+ lname: "Omri"
+ _id: "51e7bf1d84d3941816000001"
+}</pre>
+<p>This means that the record has been added to the database, notice the <strong>_id</strong> key which is auto generated within <strong>MongoDB</strong>. Let's make another <strong>GET</strong> routine that only requests one record.</p>
+<pre>server.get('/user/:id', function (req, res, next) {
+ User.findOne({ _id: req.params.id }, function (error, user) {
+  if (error) return next(new restify.InvalidArgumentError(JSON.stringify(error.errors)))
+  if (user) {
+   res.send(user)
+  } else {
+   res.send(404)
+  }
+ })
+})</pre>
+<p>This is quite similar to the first <strong>GET</strong> routine with one addition, it is the path <strong>/user/:id</strong>, which tells the application to wait for a value after <strong>/user/</strong> and map it to <strong>req.params.id</strong>. In this case, it is the id of the record to retrieve . Let's see how it works</p>
+<pre>curl -i http://localhost:7000/user/51e7bf1d84d3941816000001</pre>
+<p>would return</p>
+<pre>{
+ __v: 0
+ email: "jokerhacker.jacer@gmail.com"
+ fname: "Jacer"
+ lname: "Omri"
+ _id: "51e7bf1d84d3941816000001"
+}</pre>
+<p>What is about updating an existing record?</p>
+<pre>server.put('/user/:id', function (req, res, next) {
+ if (req.params.email === undefined) {
+  return next(new restify.InvalidArgumentError('Email must be supplied'))
+ }
+ var userData = {
+  email: req.params.email,
+  fname: req.params.fname,
+  lname: req.params.lname
+ }
+ User.update({ _id: req.params.id }, userData, {
+  multi: false
+ }, function (error, user) {
+  if (error) return next(new restify.InvalidArgumentError(JSON.stringify(error.errors)))
+  res.send()
+ })
+})</pre>
+<p>As you can see, this is the <strong>PUT</strong> routine which is similar to <strong>POST</strong> but it does not add a new record anyway, notice the <strong>update()</strong> function.  Let's say i want to change my e-mail address</p>
+<pre>curl -i -X PUT -d '{ "email": "jokerhacker.jacer@gmail.com", "fname": "Jacer", "lname": "Omri" } ' http://localhost:7000/user/51e7bf1d84d3941816000001</pre>
+<p>This way we tell the system to update the record having <strong>_id</strong> equals <strong>51e7bf1d84d3941816000001</strong> with the data provided in the request body, which will update the previous user with the new e-mail  address. Now the <strong>DELETE</strong> routine</p>
+<pre>server.del('/user/:id', function (req, res, next) {
+ User.remove({ _id: req.params.id }, function (error, user) {
+ if (error) return next(new restify.InvalidArgumentError(JSON.stringify(error.errors)))
+res.send()
+ })
+})</pre>
+<p>This is relatively simple, it requires an id to be given in the request path so it would be deleted. Let's try it</p>
+<pre>curl -i -X DELETE http://localhost:7000/user/51e7bf1d84d3941816000001</pre>
+<p>To make sure the record is successfully deleted, just request the first <strong>GET</strong> request and you will not find this id.</p>
+<p>This is it! We've already done building a basic API using Node.js and a minimum number of modules. You can go further with this, like creating security policies like login/pass or api keys. You can find a copy of the whole app.js file assembled <a href="https://gist.github.com/JokerHacker/6030118" target="_blank">here</a>.</p>
+<p>If you find this tutorial and others on this blog useful, follow me here and on social networks to keep in touch and read my coming articles.</p>

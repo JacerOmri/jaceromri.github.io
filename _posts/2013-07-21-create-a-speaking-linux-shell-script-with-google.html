@@ -1,0 +1,95 @@
+---
+layout: post
+title: Create a speaking Linux shell script with Google
+categories:
+- Tutorials
+tags:
+- api
+- Google
+- hack
+- linux
+- Shell script
+- Text to speech
+- TTS
+status: publish
+type: post
+published: true
+meta:
+  geo_public: '0'
+  _thumbnail_id: '151'
+  _publicize_pending: '1'
+  _zemanta_has_recommendations: '1'
+  enclosure: ! 'http://translate.google.com/translate_tts?ie=UTF-8&amp
+
+    0
+
+
+'
+  _wpas_mess: ! 'Create a speaking #Linux #ShellScript with #Google http://wp.me/p3JwxB-2l
+    #TTS #hack'
+  _wpas_done_4060388: '1'
+  _publicize_done_external: a:1:{s:8:"facebook";a:1:{i:100003508657658;b:1;}}
+  publicize_twitter_user: JacerOmri
+  _wpas_done_4060389: '1'
+  _wpas_done_4060390: '1'
+  _wpas_done_4060391: '1'
+  publicize_reach: a:4:{s:7:"twitter";a:1:{i:4060389;i:143;}s:2:"fb";a:1:{i:4060388;i:455;}s:6:"tumblr";a:1:{i:4060391;i:5;}s:2:"wp";a:1:{i:0;i:12;}}
+  _wpas_skip_4060388: '1'
+  _wpas_skip_4060389: '1'
+  _wpas_skip_4060390: '1'
+  _wpas_skip_4060391: '1'
+author: 
+---
+<p>After <a title="Using Google Translate in PHP" href="http://jacerdass.wordpress.com/2013/07/19/using-google-translate-in-php/" target="_blank">using google to translate text</a> and<a title="Hacking Google Voice API in Linux" href="http://jacerdass.wordpress.com/2013/07/16/hacking-google-voice-api-in-linux/" target="_blank"> decode audio into text</a>, now we are about to make a small <a class="zem_slink" title="Speech synthesis" href="http://en.wikipedia.org/wiki/Speech_synthesis" target="_blank" rel="wikipedia">text to speech engine</a> that uses google too. This is easy and pretty useful. Besides, it supports all languages (it is google, right?)<!--more--></p>
+<p>Let's agree that the script we are about to create should accept 2 arguments: text to transform (required) and input language (optional). If the language is not specified, it would use english as the default value. You should know that the text is going to be transported into a get request to google servers, so we should think to <a class="zem_slink" title="Percent-encoding" href="http://en.wikipedia.org/wiki/Percent-encoding" target="_blank" rel="wikipedia">url-encode</a> it, and here is how</p>
+<pre>rawurlencode() {
+   local string="${1}"
+   local strlen=${#string}
+   local encoded=""
+
+   for (( pos=0 ; pos&lt;strlen ; pos++ )); do
+      c=${string:$pos:1}
+      case "$c" in
+         [-_.~a-zA-Z0-9] ) o="${c}" ;;
+         * ) printf -v o '%%%02x' "'$c"
+      esac
+     encoded+="${o}"
+   done
+   echo "${encoded}"
+}</pre>
+<p>This function doesn't rely on any external tools and it does the job very well!  Next thing is to check the inputs, i mean language and text</p>
+<pre>if [ -z "$1" ]
+ then
+   echo "No text specified, exiting"
+   exit
+ else
+   TEXT=$( rawurlencode "$1" )
+fiif [ -z "$2" ]
+ then
+   echo "No language supplied, using en"
+   LANG="en"
+ else
+   LANG="$2"
+fi</pre>
+<p>We set the script to expect a first parameter and store it in <em>TEXT</em> variable after url-encoding it. If text in not specified, the script would exit. Then it checks if a language is specified and store it in <em>LANG</em> variable, otherwise <em>LANG</em> would equal <strong>en</strong>. Now let's see how is interacting with google TTS engine is possible. After a minute with the google translator web page, i realised that was not hard to get at all. The api url looks like this</p>
+<pre>API="http://translate.google.com/translate_tts?ie=UTF-8&amp;tl=$LANG&amp;q=$TEXT"</pre>
+<p>As you can see, this new <em>API</em> variable holds the url to be used later. This url returns an MP3 file, so we should save it temporally, best way to choose a name for it is to use MD5 hash</p>
+<pre>hash="$(echo -n "$TEXT" | md5sum )"</pre>
+<p>Before proceeding, i should tell you that the above url is protected against wget, it only accepts requests from browser, but when was this a problem? Let's define the <a class="zem_slink" title="User agent" href="http://en.wikipedia.org/wiki/User_agent" target="_blank" rel="wikipedia">UserAgent</a> string to use</p>
+<pre>UA="Mozilla/5.0 (Windows NT 6.2; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/29.0.1547.2 Safari/537.36"</pre>
+<p>This is the latest <a class="zem_slink" title="Google Chrome" href="http://www.google.com/chrome" target="_blank" rel="homepage">Google Chrome</a> version in the time i'm writing this. It is even not stable yet lol. Time to make the long waited request!</p>
+<pre>wget -o /dev/null --user-agent="$UA" -O "/tmp/$hash.mp3" "$API"</pre>
+<p>Now we tell wget to grab the audio file and store it <strong>/tmp</strong> folder with the <em>hash</em> name we have already created. The request will go as if it was issued through a browser thanks to the <strong>--user-agent</strong> option. Now we need a tool that would play a sound file in <a class="zem_slink" title="Command-line interface" href="http://en.wikipedia.org/wiki/Command-line_interface" target="_blank" rel="wikipedia">cli mode</a>, i have chosen a lightweight one called <strong><a class="zem_slink" title="Mpg123" href="http://mpg123.org" target="_blank" rel="homepage">mpg123</a></strong>, go ahead and install it if you didn't</p>
+<pre>sudo apt-get install mpg123</pre>
+<p>Let's get back to the talking script, we know exactly where we have left the audio file, time to give <strong>mpg123</strong> a try</p>
+<pre>mpg123 -q "/tmp/$hash.mp3"</pre>
+<p>Hurray! this is the part of  the script that plays the sound, this is exciting! one last thing to do is to remove the temporary audio file</p>
+<pre>rm "/tmp/$hash.mp3"</pre>
+<p>Now the script is ready to use! check <a href="https://gist.github.com/JokerHacker/6047812" target="_blank">my gist here</a> to find a full script file, download it and test it, you may probably want to hear things like</p>
+<pre>./googleTTS.sh "damn i'm a geek"
+./googleTTS.sh "j'aime google!" fr</pre>
+<p>don't forget to make the script file executable before running it</p>
+<pre>chmod +x googleTTS.sh</pre>
+<p>This would be really powerful if combined with the previous <a title="Hacking Google Voice API in Linux" href="http://jacerdass.wordpress.com/2013/07/16/hacking-google-voice-api-in-linux/">voice to text decoder</a> You can make much more improvements on this one, maybe a caching system is an obvious need. I should leave you playing around with it, you can use a spell checker (i would explain how if you want) with it or you can put it everywhere on your system and feel like Tony Stark lol<br />
+Leave a comment in the box below to tell us how was your experience with this, maybe you want to subscribe or follow me on social medias too.</p>
+<p><img class="aligncenter" alt="" src="http://blogs.adobe.com/aftereffects/files/2013/01/Iron_Man_HUD_MarkVII_Leviathan_Analysis_full_624_351.png" width="624" height="351" /></p>

@@ -1,0 +1,69 @@
+---
+layout: post
+title: Hacking Google Voice API in Linux
+categories:
+- Tutorials
+tags:
+- Google Voice
+- hack
+- JSON
+- linux
+- shell
+status: publish
+type: post
+published: true
+meta:
+  geo_public: '0'
+  _thumbnail_id: '95'
+  _wpas_mess: ! "#Hacking Google Voice API in #Linux\r\nhttp://wp.me/p3JwxB-1q #shell"
+  _publicize_pending: '1'
+  _zemanta_has_recommendations: '1'
+  _publicize_done_external: a:1:{s:8:"facebook";a:1:{i:100003508657658;b:1;}}
+  _wpas_done_4060388: '1'
+  publicize_twitter_user: JacerOmri
+  _wpas_done_4060389: '1'
+  _wpas_done_4060390: '1'
+  _wpas_done_4060391: '1'
+  publicize_reach: a:4:{s:7:"twitter";a:1:{i:4060389;i:138;}s:2:"fb";a:1:{i:4060388;i:453;}s:6:"tumblr";a:1:{i:4060391;i:3;}s:2:"wp";a:1:{i:0;i:5;}}
+author: 
+---
+<p>You should have seen voice-aware input zones coming with the new google chrome release about a month ago. Yeah it's a cool way to input text easily without typing for long seconds, with the opportunity to get search results for "laughable clothes" when you say "fashionable clothes". Seriously i cannot see how this is useful, especially when it comes to <a class="zem_slink" title="Desktop computer" href="http://en.wikipedia.org/wiki/Desktop_computer" target="_blank" rel="wikipedia">desktop PCs</a>.</p>
+<p>But there's a good guy on the internet who happily made good use of it. He made a <a class="zem_slink" title="Shell script" href="http://en.wikipedia.org/wiki/Shell_script" target="_blank" rel="wikipedia">shell script</a> that listens to your voice and use <a class="zem_slink" title="Google Voice" href="http://www.google.com/googlevoice/about.html" target="_blank" rel="homepage">Google Voice</a> <a class="zem_slink" title="Application programming interface" href="http://en.wikipedia.org/wiki/Application_programming_interface" target="_blank" rel="wikipedia">API</a> to decode it and convert it to text. I will be explaining this hack he made so you all can make good use of it.<!--more--></p>
+<p>First thing is we need a url for the API, do we define the API variable</p>
+<pre>API="http://www.google.com/speech-api/v1/recognize?lang=en"</pre>
+<p>Note that at the end of  it there is this lang parameter, we can make our script more efficient if it would be able to handle multiple languages, let's put it in a variable, or maybe get it passed as an argument :)</p>
+<pre>if [ -z "$1" ]
+  then
+    echo "No language supplied, using en\n"
+    LANG="en"
+  else
+    echo "using $1 as language\n"
+    LANG="$1"
+fi
+API="http://www.google.com/speech-api/v1/recognize?lang=$LANG"</pre>
+<p>Now we need to send to this url a sound file containing our voice. But it's not that simple of course, we need:</p>
+<ul>
+<li><strong>arecord</strong> to record our voice over the mic</li>
+<li><strong><a class="zem_slink" title="FLAC" href="http://flac.sourceforge.net/" target="_blank" rel="homepage">flac</a></strong> to convert the <a class="zem_slink" title="File format" href="http://en.wikipedia.org/wiki/File_format" target="_blank" rel="wikipedia">file format</a></li>
+<li><strong>wget</strong> to interact with the api</li>
+</ul>
+<p>Make sure these 3 packages are installed, if not, you can always use your package manager like <strong>apt-get</strong> to install it. The reason we're converting the file into flac format is that is required by the API itself. Now let's mix things together!</p>
+<pre>JSON=`arecord -f cd -t wav -d 3 -r 16000 | flac - -f --best --sample-rate 16000 -o out.flac;\
+wget -O - -o /dev/null --post-file out.flac --header="Content-Type: audio/x-flac; rate=16000" "$API"`</pre>
+<p>As you can see, we did good so far and the script will receive the response in JSON format, so we need to parse it using <a href="http://jacerdass.wordpress.com/2013/07/13/sed-command-tips-and-tricks/">sed</a> and awk. I already wrote an article about <a href="http://jacerdass.wordpress.com/2013/07/13/sed-command-tips-and-tricks/">sed</a> here, you want to check it out. This may look freaky but it does the job</p>
+<pre>UTTERANCE=`echo $JSON\
+ |sed -e 's/[{}]/''/g'\
+  |awk -v k="text" '{n=split($0,a,","); for (i=1; i&lt;=n; i++) print a[i]; exit }'\
+   |awk -F: 'NR==3 { print $3; exit }'\
+    |sed -e 's/["]/''/g'`
+echo "utterance: $UTTERANCE"</pre>
+<p>Yeah now we had our script to echo the text! That seems pretty geeky, but how can this be useful? Controlling our PC maybe? why not! To do that we must define string to which the script compares the final text, if it matches one of the strings, it executes the corresponding command.</p>
+<pre>CMD_LIST_DIRECTORY="list directory"
+CMD_WHOAMI="who am i"
+if [ `echo "$UTTERANCE" | grep -ic "^$CMD_LIST_DIRECTORY$"` -gt 0 ]; then
+     ls .
+elif [ `echo "$UTTERANCE" | grep -ic "^$CMD_WHOAMI$"` -gt 0 ]; then
+     whoami
+fi</pre>
+<p>We can define countless numbers of commands, i will be working on using arrays for this (maybe one of you can do it for us :) ). You can find a complete script <a href="https://gist.github.com/JokerHacker/6003852" target="_blank">here</a> if you are too lazy to save a new file :p</p>
+<p>Guess what, we just made good use of Google Voice API! I will leave you to test it, improve it and why not share it. Your comments are welcome.</p>

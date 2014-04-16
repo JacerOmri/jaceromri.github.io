@@ -1,0 +1,78 @@
+---
+layout: post
+title: Most efficient way to deal with 3G modems in Ubuntu
+categories:
+- Tutorials
+tags:
+- 3g
+- linux
+- modem
+- Ubuntu
+- Universal Serial Bus
+- usb
+status: publish
+type: post
+published: true
+meta:
+  geo_public: '0'
+  _thumbnail_id: '214'
+  _publicize_pending: '1'
+  _zemanta_has_recommendations: '1'
+  publicize_facebook_url: https://facebook.com/420477664745852
+  publicize_tumblr_url: http://jokerhacker.tumblr.com.tumblr.com/post/68920194166
+  _wpas_mess: Most efficient way to deal with 3G modems in Ubuntu
+  _wpas_done_4060388: '1'
+  _publicize_done_external: a:1:{s:8:"facebook";a:1:{i:100003508657658;b:1;}}
+  publicize_google_plus_url: https://plus.google.com/110341095885575842448/posts/eVNnHbCnsjA
+  _wpas_done_5434454: '1'
+  publicize_twitter_user: JacerOmri
+  publicize_twitter_url: http://t.co/2HkL3b8Zbo
+  _wpas_done_4060389: '1'
+  publicize_linkedin_url: http://www.linkedin.com/updates?discuss=&scope=133241604&stype=M&topic=5813779256668733440&type=U&a=i4-C
+  _wpas_done_4060390: '1'
+  _wpas_done_4060391: '1'
+  _wpas_skip_4060388: '1'
+  _wpas_skip_5434454: '1'
+  _wpas_skip_4060389: '1'
+  _wpas_skip_4060390: '1'
+  _wpas_skip_4060391: '1'
+author: 
+---
+<p>It's been a while since the last time I wrote on my blog. Today I thought I should talk about the issues met when using 3G <a class="zem_slink" title="Universal Serial Bus" href="http://en.wikipedia.org/wiki/Universal_Serial_Bus" target="_blank" rel="wikipedia">USB</a> modems on <a class="zem_slink" title="Ubuntu (operating system)" href="http://www.ubuntu.com" target="_blank" rel="homepage">Ubuntu</a> (<a class="zem_slink" title="Linux distribution" href="http://en.wikipedia.org/wiki/Linux_distribution" target="_blank" rel="wikipedia">Linux distros</a> generally) since I noticed that it annoys many people because they don't work properly.<!--more--></p>
+<p>Some years ago I came up with a small workaround to this problem when I encountered it for the first time. I used usb_modswitch to properly recognise the device. Then I wrapped it in a script and started distributing it to my friends. Soon, I realized that this wasn't a solution, it did work sometimes, but it wasn't efficient.</p>
+<p>So I started digging deeper to find alternative solutions, and I've seen the "sakis3g" project. This project, seemed immature for me in the first time, is script which uses usb_modswitch mainly to make these devices switch from mass storage mode to modem mode. After more releases of this project, it have been becoming more efficient and stable. I tried it on many machines and it worked on all cases so far.</p>
+<h2>Installing Sakis3g</h2>
+<p>there are 2 available options to get sakis3g working on your machine:</p>
+<ul>
+<li><a class="zem_slink" title="Compiler" href="http://en.wikipedia.org/wiki/Compiler" target="_blank" rel="wikipedia">compiling</a> the <a class="zem_slink" title="Source code" href="http://en.wikipedia.org/wiki/Source_code" target="_blank" rel="wikipedia">source code</a> (if you're geeky enough).</li>
+<li>installing it from a ppa.</li>
+</ul>
+<h3>Compiling sakis3g</h3>
+<p>To compile sakis3g , we need to get the source code from github and compile it. This is done using these commands:</p>
+<pre>git clone https://github.com/trixarian/sakis3g-source.git
+ cd sakis3g-source
+ mkdir build
+ ./compile
+ <a class="zem_slink" title="Sudo" href="http://www.sudo.ws" target="_blank" rel="homepage">sudo</a> cp build/sakis3gz /usr/bin/sakis3g</pre>
+<h3> Installing from <a class="zem_slink" title="Personal Package Archive" href="http://en.wikipedia.org/wiki/Personal_Package_Archive" target="_blank" rel="wikipedia">PPA</a></h3>
+<p>getting packages from PPAs saves up a great deal of time and effort. I found a ppa that holds sakis3g even for the latest release of ubuntu (saucy). To add the ppa and install sakis3g:</p>
+<pre>sudo add-apt-repository ppa:darklordpaunik8880/darksmsaucy
+sudo <a class="zem_slink" title="Advanced Packaging Tool" href="http://wiki.debian.org/Apt" target="_blank" rel="homepage">apt-get</a> update
+sudo apt-get install sakis3g</pre>
+<p>Here we go, sakis3g is now installed</p>
+<h2>Using Sakis3g</h2>
+<p>I will not go through <a class="zem_slink" title="Command-line interface" href="http://en.wikipedia.org/wiki/Command-line_interface" target="_blank" rel="wikipedia">command lines</a> anymore, since saki3g offers us a nice <a class="zem_slink" title="Graphical user interface" href="http://en.wikipedia.org/wiki/Graphical_user_interface" target="_blank" rel="wikipedia">graphical interface</a> to use it. But to enable this interface we need to one last command</p>
+<pre>sudo sakis3g desktop</pre>
+<p>this command will create a launcher on the desktop. Go ahead and launch it, I'm pretty sure you will know how to use it ;)</p>
+<div>
+<div>
+<div id="js-repo-pjax-container">
+<div id="readme">
+<article>[caption id="attachment_210" align="aligncenter" width="340"]<a href="http://jacerdass.files.wordpress.com/2013/12/screenshot-from-2013-09-28-20-42-13.png"><img class="size-full wp-image-210 " alt="Sakis3g Screenshot" src="http://jacerdass.files.wordpress.com/2013/12/screenshot-from-2013-09-28-20-42-13.png" width="340" height="238" /></a> Sakis3g Screenshot[/caption]
+<p>I would recommend not to configure connection through sakis3g since it's a bit buggy, make a new broadband connection from your network manager and use sakis3g just to switch you modem, then connect using the previously created configuration.</p>
+<p>Don't forget to share :)</p>
+</article>
+</div>
+</div>
+</div>
+</div>

@@ -1,0 +1,77 @@
+---
+layout: post
+title: ! 'Node.js: First Steps'
+categories:
+- Tutorials
+tags:
+- JavaScript
+- Node.js
+- Servers
+- WebSocket
+status: publish
+type: post
+published: true
+meta:
+  geo_public: '0'
+  _wpas_mess: ! '#NodeJS: First Steps http://wp.me/p3JwxB-11 #WebDevelopment #WebApps'
+  _thumbnail_id: '83'
+  _publicize_pending: '1'
+  _zemanta_has_recommendations: '1'
+  _wpas_done_4060388: '1'
+  _wpas_done_4060391: '1'
+  publicize_reach: a:4:{s:7:"twitter";a:1:{i:4060389;i:138;}s:2:"fb";a:1:{i:4060388;i:455;}s:6:"tumblr";a:1:{i:4060391;i:3;}s:2:"wp";a:1:{i:0;i:2;}}
+  _publicize_done_external: a:1:{s:8:"facebook";a:1:{i:100003508657658;b:1;}}
+  publicize_twitter_user: JacerOmri
+  _wpas_done_4060389: '1'
+  _wpas_done_4060390: '1'
+  _wpas_skip_4060388: '1'
+  _wpas_skip_4060389: '1'
+  _wpas_skip_4060390: '1'
+  _wpas_skip_4060391: '1'
+  tagazine-media: a:7:{s:7:"primary";s:0:"";s:6:"images";a:0:{}s:6:"videos";a:0:{}s:11:"image_count";i:0;s:6:"author";s:8:"24772033";s:7:"blog_id";s:8:"55178859";s:9:"mod_stamp";s:19:"2013-07-15
+    08:37:18";}
+author: 
+---
+<p>Yesterday, i have been So yesterday I talked about <a href="http://jacerdass.wordpress.com/2013/07/14/introduction-to-node-js/">my experience with node.js</a> in which I was impressed with it's usefulness and went through its history and what node.js brings to the table. A node.js expert, <a href="https://plus.google.com/115497443161931361398" target="_blank">Mr. Rafik NACCACHE</a> highlighted a  couple of features that I did not  mention<br />
+like how node.js is best used in apps with <a class="zem_slink" title="WebSocket" href="http://en.wikipedia.org/wiki/WebSocket" target="_blank" rel="wikipedia">WebSocket</a>, like real time networking as seen in games, chat, push notification <a class="zem_slink" title="Server (computing)" href="http://en.wikipedia.org/wiki/Server_%28computing%29" target="_blank" rel="wikipedia">servers</a>, etc... It should be noted though that node.js isn't the optimal option in certain situations like "classical server rendered web".</p>
+<p>Enough talking and let's start the action! in this article I will explain how to install node.js along with its <a class="zem_slink" title="Package management system" href="http://en.wikipedia.org/wiki/Package_management_system" target="_blank" rel="wikipedia">package manager</a> on an ubuntu machine and have some test coding.</p>
+<p><!--more--></p>
+<h1>Installing</h1>
+<p>There's an easy way to do it, using the ubuntu package manager of course. We have to add the appropriate <a class="zem_slink" title="Personal Package Archive" href="http://en.wikipedia.org/wiki/Personal_Package_Archive" target="_blank" rel="wikipedia">PPA</a> to be able to locate the package</p>
+<pre>sudo <a class="zem_slink" title="Advanced Packaging Tool" href="http://wiki.debian.org/Apt" target="_blank" rel="homepage">apt-get</a> install python-software-properties
+sudo add-apt-repository ppa:chris-lea/node.js
+sudo apt-get update
+sudo apt-get install <a class="zem_slink" title="Node.js" href="http://nodejs.org/" target="_blank" rel="homepage">nodejs</a></pre>
+<p>If something went wrong or you are too geeky to do it that way, then you probably want to install it from source, and here is how:</p>
+<pre>echo 'export PATH=$HOME/local/bin:$PATH' &gt;&gt; ~/.bashrc
+. ~/.bashrc
+mkdir ~/local
+mkdir ~/node-latest-install
+cd ~/node-latest-install
+curl http://nodejs.org/dist/node-latest.tar.gz | tar xz --strip-components=1
+./configure --prefix=~/local
+make install # ok, fine, this step probably takes more than 30 seconds...
+curl https://npmjs.org/install.sh | sh</pre>
+<p>this is the best way so far to do it, written by Isaac Z. Schlueter. More details can be found <a href="https://github.com/joyent/node/wiki/Installing-Node.js-via-package-manager" target="_blank">here</a>.</p>
+<p><!--more--></p>
+<h1>Your first script</h1>
+<p>As i mentioned before, node.js' way to do thing is really super simple and easy, eliminating all the common repetitive coding required to accomplish tasks. Let's make a Hello World web server. First thing we need is a way to initiate a server. Don't worry, that is what modules are for, minimizing the amount of code you have to write. We can use the "http" module which can provide us with a server interface.</p>
+<pre>var http = require('http');</pre>
+<p>Now the variable http holds our http server module. What we are going to do next is as follows</p>
+<ul>
+<li>create a server</li>
+<li>set its behaviour to give 200 head and echos "Hello World"</li>
+<li>make it listen on a port</li>
+</ul>
+<p>and here is how</p>
+<pre>var http = require('http');
+var server = http.createServer(function (req, res) {
+res.writeHead(200, {'Content-Type': 'text/plain'});
+res.end('Hello World\n');
+}).listen(8100, "127.0.0.1");
+console.log('Server running at http://127.0.0.1:8100/');</pre>
+<p>Pretty easy, right? now let's run it. Save the above code in a file wherever on your hard disk, open terminal, navigate to its folder and type the following:</p>
+<pre>node script_file_name.js</pre>
+<p>Open your web browser, type http://127.0.0.1:8100 and hurray! it says Hello World!</p>
+<h1>Conclusion</h1>
+<p>Again, node.js is really straightforward and can do big things with just a few simple lines of code. Probably you're saying "hey what about the package manager? we didn't use it", well that is because we didn't do anything complicated yet. In my next article about node.js, i will show you how to install and use more modules and make a slightly more sophisticated program. Until then, follow me on this blog or on social medias and help us by submitting your comments below.</p>

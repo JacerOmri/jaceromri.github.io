@@ -1,0 +1,72 @@
+---
+layout: post
+title: Introduction to node.js
+categories:
+- Tutorials
+tags:
+- Asynchronous I/O
+- Callback (computer programming)
+- JavaScript
+- Node.js
+- Programming
+- Ryan Dahl
+- Scalability
+- Web application
+status: publish
+type: post
+published: true
+meta:
+  _thumbnail_id: '56'
+  geo_public: '0'
+  _publicize_pending: '1'
+  _zemanta_has_recommendations: '1'
+  _publicize_done_external: a:1:{s:8:"facebook";a:1:{i:100003508657658;b:1;}}
+  _wpas_done_4060388: '1'
+  _wpas_mess: ! 'Introduction to #NodeJS http://wp.me/p3JwxB-R #WebDevelopment #WebApps'
+  publicize_twitter_user: JacerOmri
+  _wpas_done_4060389: '1'
+  _wpas_done_4060390: '1'
+  _wpas_done_4060391: '1'
+  publicize_reach: a:4:{s:7:"twitter";a:1:{i:4060389;i:139;}s:2:"fb";a:1:{i:4060388;i:451;}s:6:"tumblr";a:1:{i:4060391;i:3;}s:2:"wp";a:1:{i:0;i:2;}}
+  tagazine-media: a:7:{s:7:"primary";s:69:"http://berb.github.io/nodejs-talk-chaosseminar/assets/images/ryah.jpg";s:6:"images";a:1:{s:69:"http://berb.github.io/nodejs-talk-chaosseminar/assets/images/ryah.jpg";a:6:{s:8:"file_url";s:69:"http://berb.github.io/nodejs-talk-chaosseminar/assets/images/ryah.jpg";s:5:"width";i:635;s:6:"height";i:654;s:4:"type";s:5:"image";s:4:"area";i:415290;s:9:"file_path";s:0:"";}}s:6:"videos";a:0:{}s:11:"image_count";i:1;s:6:"author";s:8:"24772033";s:7:"blog_id";s:8:"55178859";s:9:"mod_stamp";s:19:"2013-07-14
+    14:46:52";}
+author: 
+---
+<p>I guess everybody in the field heard about node.js already, but likely most of them have ignored it, just like i did, questioning its future without getting into its details. Well, i do know now that i have made a mistake by doing so. Lately, i have gone through node.js documentations and list of addons, and i have to say it: it's incredibly awesome! And here is why.<!--more--> Basically, what node.js has to offer is a hole new horizon for what network applications are. Its creator, <a class="zem_slink" title="Node.js" href="http://en.wikipedia.org/wiki/Node.js" target="_blank" rel="wikipedia">Ryan Dahl</a>, needed a to create web sites with push capabilities as seen in web applications like <a class="zem_slink" title="Gmail" href="http://gmail.com" target="_blank" rel="homepage">Gmail</a>. after several trials, he has chosen <a class="zem_slink" title="JavaScript" href="http://en.wikipedia.org/wiki/JavaScript" target="_blank" rel="wikipedia">JavaScript</a> because it didn't have an IO api, so he could have the freedom in defining one as he wishes.</p>
+<p>[caption id="" align="alignright" width="635"]<img alt="Ryan Dahl" src="http://berb.github.io/nodejs-talk-chaosseminar/assets/images/ryah.jpg" width="635" height="654" /> Ryan Dahl[/caption]</p>
+<p>He started developing it with some main points in mind:</p>
+<ul>
+<li>event driven mechanism</li>
+<li><a class="zem_slink" title="Asynchronous I/O" href="http://en.wikipedia.org/wiki/Asynchronous_I/O" target="_blank" rel="wikipedia">non blocking IO</a></li>
+<li><a class="zem_slink" title="Scalability" href="http://en.wikipedia.org/wiki/Scalability" target="_blank" rel="wikipedia">Scalability</a></li>
+<li>performance and speed</li>
+</ul>
+<p>JavaScript would obviously seem to be the best option to create an event driven technology. the fact that node.js is event driven, and that it has a non blocking IO is pretty connected, the event mechanism is used to make callbacks everywhere, so a basic file read instruction for instance, can be non blocking by setting what to do with the data grabbed from the file as a <a class="zem_slink" title="Callback (computer programming)" href="http://en.wikipedia.org/wiki/Callback_%28computer_programming%29" target="_blank" rel="wikipedia">callback function</a>, so that while the system is reading the file, it can continue executing the script and serve the data when it comes. Take thin example:</p>
+<pre>var fs = require('fs');
+var contents = fs.readFileSync('users','utf8');
+console.log(contents);
+console.log("Hello Node\n");
+var contents = fs.readFileSync('hosts','utf8');
+console.log(contents);
+console.log("Hello again!");</pre>
+<p>this code is blocking, means every instruction is executed only if its predecessor  is fully executed. This approach is what believed to be non network friendly, the node.js way to do it is:</p>
+<pre>var fs = require('fs');
+var contents = fs.readFile('./users','utf8', function(err,contents){
+     console.log(contents);
+});
+console.log("Hello Node\n");
+var contents = fs.readFile('./hosts','utf8', function(err,contents){
+     console.log(contents);
+});
+console.log("Hello again!");</pre>
+<p>You have to know that, when you try this code, you will get an unexpected result, the 2 instructions that do not depend on the <a class="zem_slink" title="File system" href="http://en.wikipedia.org/wiki/File_system" target="_blank" rel="wikipedia">file system</a> read call are executed in the first place,</p>
+<pre>Hello Node
+Hello again!
+list of users...
+list of hosts...</pre>
+<p>this weird order comes from that the list of users and the list of hosts have to be read first, so that would take time, so we printed them in the callback of the read function, in other words, read the file, once done echo it, but meanwhile, do something else.</p>
+<p>Best part of node.js is that it doesn't rely on an external software to do the web server part, it's the web server, the website and everything in the same time! that allows to build fast, scalable and flexible web applications with minimum overhead.</p>
+<p>But what about performance? node.js is built on top of <a class="zem_slink" title="Google" href="http://google.com" target="_blank" rel="homepage">Google's</a> <a class="zem_slink" title="V8 (JavaScript engine)" href="http://code.google.com/p/v8" target="_blank" rel="homepage">V8 JavaScript engine</a>, the libuv platform abstraction layer, which are written in C++ and C, the world fastest programming languages. That would have huge effect on the time and resources needed in order for node.js to interpret the code. I don't think there would be a better solution.</p>
+<h2>Conclusion</h2>
+<p>node.js is really useful and it has a great future. It's easy to learn and everyone should at least know about it. I'll be posting tutorials and open source projects I have written using node.js, so follow me and stay tuned! Meanwhile take a look at <a href="http://nodejs.org/" target="_blank">node.js website</a>.</p>
+<p>&nbsp;</p>

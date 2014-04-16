@@ -1,0 +1,57 @@
+---
+layout: post
+title: Ignore Linus, C++ is fun
+categories:
+- Review
+tags:
+- C++
+- C++Sucks
+- Explanation
+- Exponentiation
+- Linus Torvald
+status: publish
+type: post
+published: true
+meta:
+  geo_public: '0'
+  _thumbnail_id: '201'
+  _publicize_pending: '1'
+  _zemanta_has_recommendations: '1'
+  _wpas_done_4060388: '1'
+  tagazine-media: a:7:{s:7:"primary";s:0:"";s:6:"images";a:0:{}s:6:"videos";a:0:{}s:11:"image_count";i:0;s:6:"author";s:8:"24772033";s:7:"blog_id";s:8:"55178859";s:9:"mod_stamp";s:19:"2013-08-03
+    16:06:28";}
+  _wpas_mess: ! 'Ignore #Linus, #Cpp is #fun http://wp.me/p3JwxB-2U'
+  _wpas_skip_4060390: '1'
+  _publicize_done_external: a:1:{s:8:"facebook";a:1:{i:100003508657658;b:1;}}
+  publicize_twitter_user: JacerOmri
+  _wpas_done_4060389: '1'
+  _wpas_done_4060391: '1'
+  publicize_reach: a:4:{s:7:"twitter";a:1:{i:4060389;i:148;}s:2:"fb";a:1:{i:4060388;i:450;}s:6:"tumblr";a:1:{i:4060391;i:7;}s:2:"wp";a:1:{i:0;i:20;}}
+  _wpas_skip_4060388: '1'
+  _wpas_skip_4060389: '1'
+  _wpas_skip_4060391: '1'
+  _wpas_skip_5434454: '1'
+author: 
+---
+<p>The <a class="zem_slink" title="Wars of the Roses" href="http://en.wikipedia.org/wiki/Wars_of_the_Roses" target="_blank" rel="wikipedia">War of the Roses</a> had nothing on the language wars. Since the beginning of my computing career, I've watched developers fight over the relative virtues of <a class="zem_slink" title="Programming language" href="http://en.wikipedia.org/wiki/Programming_language" target="_blank" rel="wikipedia">programming languages</a>... from C versus <a class="zem_slink" title="Pascal (programming language)" href="http://en.wikipedia.org/wiki/Pascal_%28programming_language%29" target="_blank" rel="wikipedia">Pascal</a> to <a class="zem_slink" title="Ruby (programming language)" href="http://www.ruby-lang.org/" target="_blank" rel="homepage">Ruby</a> versus <a class="zem_slink" title="Python (programming language)" href="http://www.python.org/" target="_blank" rel="homepage">Python</a>. What <em>is</em> it about this subject that brings out such passion?<!--more--></p>
+<p><a class="zem_slink" title="Linus Torvalds" href="http://torvalds-family.blogspot.com" target="_blank" rel="homepage">Linus Torvalds</a> has gotten into the fray, posting a message on a techie list in which he says outright that <a href="http://thread.gmane.org/gmane.comp.version-control.git/57643/focus=57918">C++ is a horrible language.</a> "It's made more horrible by the fact that a lot of substandard programmers use it, to the point where it's much much easier to generate total and utter crap with it. Quite frankly, even if the choice of C were to do <em>nothing</em> but keep the C++ programmers out, that in itself would be a huge reason to use C."</p>
+<p>According to Torvalds — yes, the <strong>Linus</strong> of <strong><a class="zem_slink" title="Linux" href="http://en.wikipedia.org/wiki/Linux" target="_blank" rel="wikipedia">Linux</a></strong> — C++ leads to really really bad design choices. He says that developers "invariably start using the 'nice' library features of the language like STL and Boost and other total and utter crap," that may "help" you program, but they cause infinite amounts of pain when they don't work and inefficient abstracted programming models.</p>
+<p>We all do respect this man's point of view as he has clearly proved that he know what he is doing and saying for last 2 decades. Nowadays, a good programmer is the one who know the right tool to use for each situation, including programming languages. The funny part is that i came across a C++ code snippet that I instantly wanted to share it. These very few lines here are genius!</p>
+<pre>#include &lt;cstdio&gt;double m[]= {7709179928849219.0, 771};
+int main()
+{
+m[1]--?m[0]*=2,main():printf((char*)m);
+}</pre>
+<p>There is absolutely no way to tell what this code is capable of when you just look at it. Calm down, it is not a virus lol. It simply outputs</p>
+<pre>C++Sucks</pre>
+<p>Magic? maybe! I will quote<strong> dasblinkenlight</strong>'s explanation for this:</p>
+<blockquote><p>The number <code>7709179928849219.0</code> has the following <a class="zem_slink" title="Binary number" href="http://en.wikipedia.org/wiki/Binary_number" target="_blank" rel="wikipedia">binary representation</a> as a 64-bit <code>double</code>:</p>
+<pre><code>01000011 00111011 01100011 01110101 01010011 00101011 00101011 01000011
++^^^^^^^ ^^^^---- -------- -------- -------- -------- -------- --------</code></pre>
+<p><code>+</code> shows the position of the sign; <code>^</code> of the <a class="zem_slink" title="Exponentiation" href="http://en.wikipedia.org/wiki/Exponentiation" target="_blank" rel="wikipedia">exponent</a>, and <code>-</code> of the mantissa (i.e. the value without the exponent).</p>
+<p>Since the representation uses binary exponent and mantissa, doubling the number increments the exponent by one. Your program does it precisely 771 times, so the exponent which started at 1075 (decimal representation of <code>10000110011</code>) becomes 1075 + 771 = 1846 at the end; binary representation of 1846 is <code>11100110110</code>. The resultant pattern looks like this:</p>
+<pre><code>01110011 01101011 01100011 01110101 01010011 00101011 00101011 01000011
+-------- -------- -------- -------- -------- -------- -------- --------
+0x73 's' 0x6B 'k' 0x63 'c' 0x75 'u' 0x53 'S' 0x2B '+' 0x2B '+' 0x43 'C'</code></pre>
+<p>This pattern corresponds to the string that you see printed, only backwards. At the same time, the second element of the array becomes zero, providing <a class="zem_slink" title="Null character" href="http://en.wikipedia.org/wiki/Null_character" target="_blank" rel="wikipedia">null terminator</a>, making the string suitable for passing to <code>printf</code>.</p></blockquote>
+<p>Such code cannot be useful, it is more accurate to call it "useless headache" but it is still funny! Note that i am not judging such a huge programming language nor agreeing with Linus Torvalds, I believe in diversity and that every tool has its own use, but it seemed funny to share this. Subscribe to this blog and follow me on twitter to get more updates in the computer world.</p>

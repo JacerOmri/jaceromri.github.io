@@ -1,0 +1,116 @@
+---
+layout: post
+title: ! 'Sed command: tips and tricks'
+categories:
+- Tutorials
+tags:
+- Command-line interface
+- linux
+- Programming
+- Regular expression
+- Sed
+- shell
+- Shell script
+status: publish
+type: post
+published: true
+meta:
+  geo_public: '0'
+  _wpas_mess: ! 'Sed command: tips and tricks #linux #shell http://wp.me/p3JwxB-A'
+  _publicize_pending: '1'
+  _publicize_done_external: a:1:{s:8:"facebook";a:1:{i:100003508657658;b:1;}}
+  _wpas_done_4060388: '1'
+  publicize_twitter_user: JacerOmri
+  _wpas_done_4060389: '1'
+  _wpas_done_4060390: '1'
+  _wpas_done_4060391: '1'
+  _thumbnail_id: '46'
+  _wpas_skip_4060388: '1'
+  _wpas_skip_4060389: '1'
+  _wpas_skip_4060390: '1'
+  _wpas_skip_4060391: '1'
+  tagazine-media: a:7:{s:7:"primary";s:0:"";s:6:"images";a:0:{}s:6:"videos";a:0:{}s:11:"image_count";i:0;s:6:"author";s:8:"24772033";s:7:"blog_id";s:8:"55178859";s:9:"mod_stamp";s:19:"2013-07-13
+    20:53:01";}
+author: 
+---
+<p>I decided a year ago to learn about sed and <a class="zem_slink" title="AWK" href="http://cm.bell-labs.com/cm/cs/awkbook" target="_blank" rel="homepage">awk</a>: two powerful <a class="zem_slink" title="Command-line interface" href="http://en.wikipedia.org/wiki/Command-line_interface" target="_blank" rel="wikipedia">command line</a> based text processors. You can do really awesome tricks using them. Especially when you're writing a <a class="zem_slink" title="Shell script" href="http://en.wikipedia.org/wiki/Shell_script" target="_blank" rel="wikipedia">shell script</a>, including sed and/or awk may add bits of awesomeness to your script. You can for instance filter white spaces, parse strings in a defined way, etc..</p>
+<p>But today, i'm going to show you what i have learned so far! it sounds creepy, but it's not that hard to learn. Let's Stream EDit!<!--more--></p>
+<h2>Substitution</h2>
+<p><em>Substitute "foo" with "bar" on each line</em><br />
+Only the 1st occurrence</p>
+<pre>sed 's / foo / bar /'</pre>
+<p>For the 3rd case only</p>
+<pre>sed 's/foo/bar/3'</pre>
+<p>All occurrences</p>
+<pre>sed 's / foo / bar / g'</pre>
+<p>Just before the last occurrence</p>
+<pre>sed 's / \ (.* \) foo \ (.* foo \) / \ 1bar \ 2 /'</pre>
+<p>Only the last case</p>
+<pre>sed 's / \ (.* \) foo / \ 1bar /'</pre>
+<p>Substitute "foo" with "bar" only lines containing "plop"</p>
+<pre>sed '/ plop / s / foo / bar / g'</pre>
+<p>Substitute "foo" with "bar" except the lines containing "plop"</p>
+<pre>sed '/ plop /! s / foo / bar / g '</pre>
+<p>Replace "Foo" or "foo" with "bar" on each line</p>
+<pre>sed 's / [Ff] oo / bar / g'</pre>
+<p>Replace "blue" or "white" or "red" with "green"</p>
+<pre>sed 's / blue \ | blank \ | red / green / g'</pre>
+<h2>Display</h2>
+<p>The 1st line (head -1)</p>
+<pre>sed q</pre>
+<p>The first 5 lines (head -5)</p>
+<pre>sed '5 q '
+sed '1, 5! d '</pre>
+<p>The last line (tail -1)</p>
+<pre>sed -n '$ p'
+sed '$! d "</pre>
+<p>The last 5 lines (tail -5)</p>
+<pre>sed -e: a-e '$ q, N, 6, $ D; ba'</pre>
+<p>The 2 last lines (tail -2)</p>
+<pre>sed '$! N; $! D'</pre>
+<p>Only lines match a a reason or a <a class="zem_slink" title="Regular expression" href="http://en.wikipedia.org/wiki/Regular_expression" target="_blank" rel="wikipedia">regular expression</a></p>
+<pre>sed -n '/ pattern / p'
+sed '/ regexp /! d'</pre>
+<p>Only lines that match a not a reason or a regular expression</p>
+<pre>sed -n '/ pattern /! p'
+sed '/ regexp / d'</pre>
+<p>The line preceding a pattern or a regular expression</p>
+<pre>sed -n '/ pattern / (g; 1! p;) h'</pre>
+<p>The line following a pattern or a regular expression</p>
+<pre>sed -n '/ regexp / (n, p;)'</pre>
+<h2>Remove</h2>
+<p><em>Removing spaces and tabs</em><br />
+At the beginning of the line</p>
+<pre>sed 's / ^ [\ t] * / / 
+sed 's / ^ \ s * / /' # Using the parameter "\ s"</pre>
+<p>At <a class="zem_slink" title="Newline" href="http://en.wikipedia.org/wiki/Newline" target="_blank" rel="wikipedia">end of line</a></p>
+<pre>sed 's / [\ t ]*$//'</pre>
+<p>At the beginning and end of line</p>
+<pre>sed 's / ^ [\ t ]*//; s / [\ t ]*$//'</pre>
+<p><em>Removing blank lines </em><br />
+All empty lines</p>
+<pre>sed '/^$/ of 
+sed '/./! of</pre>
+<p>Only those at the top</p>
+<pre>sed '/./,$! of 
+sed -nr'/./,$ /(.*)/ s \ 1 / p '</pre>
+<p>Only those at end</p>
+<pre>sed -e: a-e '/ ^ \ n * $ / ($ d N; ba'-e ')'</pre>
+<p><em>Eliminate a line at regular intervals</em><br />
+All lines pairs</p>
+<pre>sed '1 ~ 2d '</pre>
+<p>All the odd lines</p>
+<pre>sed '2 ~ 2d '</pre>
+<p>Every n lines from the line n</p>
+<pre>sed '3 ~ 2d '# 2 All lines from line 3</pre>
+<h2>Miscellaneous</h2>
+<p><em>Join lines </em><br />
+Attach lines 2 by 2</p>
+<pre>sed '$! N s / \ n / /'</pre>
+<p>Attach the 3 lines by 3</p>
+<pre>sed '$! N s / \ n //;$! N s / \ n / /;'</pre>
+<p>If a line ends with a backslash (\), add the following line and replace the end of line (\ n) by a space</p>
+<pre>sed -e: a-e '/ \ \ $ / N s / \ \ \ n / /; ta'</pre>
+<p>If a line begins with an equal sign (=), add it to the previous line and replace the equal sign (=) with a space</p>
+<pre>sed -e: a-e '$! N s / \ n = / /; ta'-e 'P, D'</pre>
+<p>there are also so many other uses and techniques for sed that we cannot cover all in one post, maybe you know some, share them with us in the comment box below!</p>
