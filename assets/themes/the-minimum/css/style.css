@@ -850,3 +850,8 @@ pre {
     margin-right: 360px;
   }
 }
+
+#home {
+	width: 60em;
+	margin: auto;
+}

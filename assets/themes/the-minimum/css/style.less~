@@ -316,6 +316,11 @@ pre {
 	}
 }
 
+#home {
+width: 60em;
+margin: auto;
+}
+
 @import "_layout.less";
 @import "syntaxhighlighter.css";
 @import "helper.css";
