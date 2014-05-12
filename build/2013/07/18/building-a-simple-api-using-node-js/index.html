@@ -1,0 +1,351 @@
+
+<!DOCTYPE html>
+<!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7 ie" lang="en"> <![endif]-->
+<!--[if IE 7]>    <html class="no-js lt-ie9 lt-ie8 ie" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="no-js lt-ie9 ie" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+	<title>Building a simple API using node.js</title>
+	<meta name="author" content="Jacer Omri">
+	<link href='/assets/themes/the-minimum/css/style.css' rel="stylesheet" media="all">
+	<link href="http://feeds.feedburner.com/" rel="alternate" title="Building a simple API using node.js" type="application/atom+xml">
+	<script src="http://cdnjs.cloudflare.com/ajax/libs/modernizr/2.0.6/modernizr.min.js"></script>
+</head>
+<body>
+
+<div id="page" class="hentry">
+	<header class="the-header">
+		<div class="unit-head">
+			<div class="unit-inner unit-head-inner">
+				<p class="logo"><a href="/">Jacer Omri Blog</a></p>
+				<nav class="nav-global">
+					<ul>
+						<li class="archive"><a href="/archive.html">archive</a></li>
+						<li class="page"><a href="/pages.html">pages</a></li>
+						<li class="category"><a href="/categories.html">categories</a></li>
+						<li class="tag"><a href="/tags.html">tags</a></li>
+					</ul>
+				</nav>
+			</div><!-- unit-inner -->
+		</div><!-- unit-head -->
+	</header>
+	<div class="body" role="main">
+		<div class="unit-body">
+			<div class="unit-inner unit-body-inner">
+				<div class="entry-content">
+					
+<article class="unit-article layout-post">
+	<div class="unit-inner unit-article-inner">
+		<div class="content">
+			<header>
+				<div class="unit-head">
+					<div class="unit-inner unit-head-inner">
+						<h1 class="h2 entry-title">Building a simple API using node.js</h1>
+					</div><!-- unit-inner -->
+				</div><!-- unit-head -->
+			</header>
+
+			<div class="bd">
+				<div class="entry-content">
+					<p>I have already introduced node.js in <a href="http://jacerdass.wordpress.com/2013/07/14/introduction-to-node-js/">a previous article</a> and explained how to install it in <a href="http://jacerdass.wordpress.com/2013/07/15/node-js-first-steps/">another one</a>. Now it is time to go further with it. Basically what we will try to do today is to create a basic yet functional API <a class="zem_slink" title="Server (computing)" href="http://en.wikipedia.org/wiki/Server_%28computing%29" target="_blank" rel="wikipedia">server</a> using node.js along with <strong>restify</strong> and <a class="zem_slink" title="Mongoose" href="http://en.wikipedia.org/wiki/Mongoose" target="_blank" rel="wikipedia">mongoose</a>, which are two modules.<!--more--></p>
+<p>First thing is, we have to understand what a module is. That is quite simple, a module is a packaged code that delivers a functionality using reachable (exported) functions. <strong>Restify</strong>, for instance, helps creating <a class="zem_slink" title="Representational state transfer" href="http://en.wikipedia.org/wiki/Representational_state_transfer" target="_blank" rel="wikipedia">RESTful</a> <a class="zem_slink" title="Application programming interface" href="http://en.wikipedia.org/wiki/Application_programming_interface" target="_blank" rel="wikipedia">APIs</a> easily, while <strong>mongoose</strong> is a <a class="zem_slink" title="MongoDB" href="http://www.mongodb.org/" target="_blank" rel="homepage">MongoDB</a> driver. Node.js provides a handful tool to deal with modules, like installing and removing, it is <strong>npm. </strong>so go ahead and install those two modules, type in terminal:</p>
+<pre>npm install restify mongoose</pre>
+<p>Yes, it is that easy! Now we have <strong>restify</strong> and <strong>mongoose</strong> installed, let's start coding. Create a new directory and step into it, create an app.js file and write the following</p>
+<pre>var restify = require('restify')
+ , mongoose = require('mongoose');</pre>
+<p>these two lines actually load the modules, thanks to the <strong>require()</strong> function, and assign them to two different variables. Next step is to create a server</p>
+<pre>var server = restify.createServer({ name: 'mongo-api' })
+ server.listen(7000, function () {
+ console.log('%s listening at %s', server.name, server.url)
+})</pre>
+<p>Go ahead and try it, type</p>
+<pre>node app.js</pre>
+<p>you will see something like</p>
+<pre>mongo-api listening at http://0.0.0.0:7000</pre>
+<p>This indicates that our server is up and running, good isn't it? But it is quite useless since we have not defined any routine yet. Before, we have to connect to <strong>MongoDB</strong> and define our model. For example we can make a user model having 3 properties:</p>
+<ul>
+<li>Email</li>
+<li>First Name</li>
+<li>Last Name</li>
+</ul>
+<p>Pretty simple and easy</p>
+<pre>db = mongoose.connect("mongodb://localhost/example-api");
+var Schema = mongoose.Schema,
+ ObjectId = Schema.ObjectID;
+var User = new Schema({
+ email: {
+  type: String,
+  required: true,
+  trim: true
+ },
+ fname: {
+  type: String,
+  required: false,
+  trim: true
+ },
+ lname: {
+  type: String,
+  required: false,
+  trim: true
+ },
+});
+var User = mongoose.model('User', User);</pre>
+<p>This should be enough to connect to the database and define our User model. There is an extra tweak to the server to enable the default headers for the system using <strong>fullResponse()</strong> and <strong>bodyParser()</strong> to remap the body content of a request to the req.params variable, allowing both <strong>GET</strong> and <strong>POST</strong>/<strong>PUT</strong> routes to use the same interface, fairly handy when you want to re-use code. Go ahead and apply them</p>
+<pre>server
+ .use(restify.fullResponse())
+ .use(restify.bodyParser())</pre>
+<p>We have now the server setup and ready, along with its database part. But we still need routines to define the behaviour of the API. Our first routine, is to grab all the records in the database when the user emits a <strong>GET</strong> request to <strong>/user</strong></p>
+<pre>server.get('/user', function (req, res, next) {
+ User.find({}, function (error, users) {
+ res.send(users)
+ })
+})</pre>
+<p>To test this, we need to run the application and use curl to interact with it</p>
+<pre>curl -i http://localhost:7000/user</pre>
+<p>Since our database is still empty, this request should return something like [] indicating that nothing is found there. The next required routine is the post, where a request is able to add a record</p>
+<pre>server.post('/user', function (req, res, next) {
+ if (req.params.email === undefined) {
+  return next(new restify.InvalidArgumentError('Email must be supplied'))
+ }
+ var userData = {
+  email: req.params.email,
+  fname: req.params.fname,
+  lname: req.params.lname
+ }
+ var user = new User(userData);
+ user.save(function (error, data) {
+  if (error) {
+   return next(new restify.InvalidArgumentError(JSON.stringify(error.errors)))
+  }
+  else {
+   res.json(data);
+  }
+  res.send(201, user)
+ })
+})</pre>
+<p>It is a bit more complicated than the first routine but it is not that hard. It just accepts the <strong>POST</strong> request map it into an object and save it into the database. We are doing a very basic verification step where we check for the email is already set in the request body. Let's test this!</p>
+<pre>curl -i -X POST -d '{ "email": "mail@jacer.info", "fname": "Jacer", "lname": "Omri" } ' http://localhost:7000/user</pre>
+<p>after successfully processing the request, the server would return this</p>
+<pre>{
+ __v: 0
+ email: "jokerhacker.jacer@gmail.com"
+ fname: "Jacer"
+ lname: "Omri"
+ _id: "51e7bf1d84d3941816000001"
+}</pre>
+<p>This means that the record has been added to the database, notice the <strong>_id</strong> key which is auto generated within <strong>MongoDB</strong>. Let's make another <strong>GET</strong> routine that only requests one record.</p>
+<pre>server.get('/user/:id', function (req, res, next) {
+ User.findOne({ _id: req.params.id }, function (error, user) {
+  if (error) return next(new restify.InvalidArgumentError(JSON.stringify(error.errors)))
+  if (user) {
+   res.send(user)
+  } else {
+   res.send(404)
+  }
+ })
+})</pre>
+<p>This is quite similar to the first <strong>GET</strong> routine with one addition, it is the path <strong>/user/:id</strong>, which tells the application to wait for a value after <strong>/user/</strong> and map it to <strong>req.params.id</strong>. In this case, it is the id of the record to retrieve . Let's see how it works</p>
+<pre>curl -i http://localhost:7000/user/51e7bf1d84d3941816000001</pre>
+<p>would return</p>
+<pre>{
+ __v: 0
+ email: "jokerhacker.jacer@gmail.com"
+ fname: "Jacer"
+ lname: "Omri"
+ _id: "51e7bf1d84d3941816000001"
+}</pre>
+<p>What is about updating an existing record?</p>
+<pre>server.put('/user/:id', function (req, res, next) {
+ if (req.params.email === undefined) {
+  return next(new restify.InvalidArgumentError('Email must be supplied'))
+ }
+ var userData = {
+  email: req.params.email,
+  fname: req.params.fname,
+  lname: req.params.lname
+ }
+ User.update({ _id: req.params.id }, userData, {
+  multi: false
+ }, function (error, user) {
+  if (error) return next(new restify.InvalidArgumentError(JSON.stringify(error.errors)))
+  res.send()
+ })
+})</pre>
+<p>As you can see, this is the <strong>PUT</strong> routine which is similar to <strong>POST</strong> but it does not add a new record anyway, notice the <strong>update()</strong> function.  Let's say i want to change my e-mail address</p>
+<pre>curl -i -X PUT -d '{ "email": "jokerhacker.jacer@gmail.com", "fname": "Jacer", "lname": "Omri" } ' http://localhost:7000/user/51e7bf1d84d3941816000001</pre>
+<p>This way we tell the system to update the record having <strong>_id</strong> equals <strong>51e7bf1d84d3941816000001</strong> with the data provided in the request body, which will update the previous user with the new e-mail  address. Now the <strong>DELETE</strong> routine</p>
+<pre>server.del('/user/:id', function (req, res, next) {
+ User.remove({ _id: req.params.id }, function (error, user) {
+ if (error) return next(new restify.InvalidArgumentError(JSON.stringify(error.errors)))
+res.send()
+ })
+})</pre>
+<p>This is relatively simple, it requires an id to be given in the request path so it would be deleted. Let's try it</p>
+<pre>curl -i -X DELETE http://localhost:7000/user/51e7bf1d84d3941816000001</pre>
+<p>To make sure the record is successfully deleted, just request the first <strong>GET</strong> request and you will not find this id.</p>
+<p>This is it! We've already done building a basic API using Node.js and a minimum number of modules. You can go further with this, like creating security policies like login/pass or api keys. You can find a copy of the whole app.js file assembled <a href="https://gist.github.com/JokerHacker/6030118" target="_blank">here</a>.</p>
+<p>If you find this tutorial and others on this blog useful, follow me here and on social networks to keep in touch and read my coming articles.</p>
+
+					<div class="meta">
+						<p class="date-publish">
+							Published: 
+							<date class="date-pub" title="2013-07-18T00:00:00+01:00" datetime="2013-07-18T00:00:00+01:00" pubdate>
+							<span class="month"><abbr>July</abbr></span>
+							<span class="day">18</span>
+							<span class="year">2013</span>
+							</date>
+						</p>
+						<ul class="list-category list-linear">
+							<li class="list-head">category: </li>
+							
+							
+
+
+  
+     
+    	<li><a href="/categories.html#Tutorials-ref">
+    		Tutorials <span>9</span>
+    	</a></li>
+    
+  
+
+
+						</ul>
+						<ul class="list-tag list-linear">
+							<li class="list-head">tags: </li>
+							
+							
+
+
+  
+     
+    	<li><a href="/tags.html#api-ref">api <span>2</span></a></li>
+     
+    	<li><a href="/tags.html#Application programming interface-ref">Application programming interface <span>1</span></a></li>
+     
+    	<li><a href="/tags.html#curl-ref">curl <span>2</span></a></li>
+     
+    	<li><a href="/tags.html#JavaScript-ref">JavaScript <span>3</span></a></li>
+     
+    	<li><a href="/tags.html#MongoDB-ref">MongoDB <span>1</span></a></li>
+     
+    	<li><a href="/tags.html#mongoose-ref">mongoose <span>1</span></a></li>
+     
+    	<li><a href="/tags.html#Node.js-ref">Node.js <span>3</span></a></li>
+     
+    	<li><a href="/tags.html#restify-ref">restify <span>1</span></a></li>
+    
+  
+
+
+
+						</ul>
+					</div><!-- meta -->
+				</div><!-- entry-content -->
+				<div class="misc-content">
+					<div class="social">
+						<ul class="list-linear">
+							<li><div class="twitter-tweet"><a href="https://twitter.com/share" class="twitter-share-button" data-count="horizontal" data-via="JacerOmri" data-lang="en">Tweet</a></div></li>
+							<li><div class="twitter-follow"><a href="https://twitter.com/JacerOmri" class="twitter-follow-button" data-show-count="false" data-lang="en"></a></div></li>
+							<li><div class="g-plusone" data-size="medium"></div></li>
+							<li><div class="fb-like" data-href="/2013/07/18/building-a-simple-api-using-node-js" data-send="false" data-layout="button_count" data-width="450" data-show-faces="false" data-font="verdana"></div></li>
+						</ul>
+					</div>
+					
+					
+
+
+  <div id="disqus_thread"></div>
+<script type="text/javascript">
+    var disqus_developer = 1;
+    var disqus_shortname = 'jaceromriblog'; // required: replace example with your forum shortname
+    
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+
+
+				</div><!-- misc-content -->
+				
+			</div><!-- bd -->
+			<footer class="unit-foot">
+				<div class="unit-inner unit-foot-inner">
+					<nav class="pagination">
+						<ul>
+							
+							<li class="prev"><a class="internal" rel="prev"  href="/2013/07/17/web-scrapping-done-right-using-php" title="View Web scraping done right using PHP">&laquo; Web scraping done right using PHP</a></li>
+							
+							
+							<li class="pipe"> | </li>
+							
+							
+							<li class="next"><a class="internal" rel="next"  href="/2013/07/18/what-do-you-want-to-read-about" title="View What do you want to read about?">What do you want to read about? &raquo;</a></li>
+							
+						</ul>
+					</nav>
+					<p class="gotop">
+						<a href="#page">Back to Top</a>
+					</p>
+				</div>
+			</footer>
+
+		</div><!-- content -->
+	</div><!-- unit-inner -->
+</article>
+
+
+				</div>
+			</div><!-- unit-inner -->
+		</div><!-- unit-body -->
+	</div><!-- body -->
+	<footer class="the-footer">
+		<div class="unit-foot">
+			<div class="unit-inner unit-foot-inner">
+				<div class="misc vcard">
+					<h4>about</h4>
+					<ul>
+						<li class="contact"><address><span class="author fn n">Jacer Omri</span> - <span class="fn email">jokerhacker.jacer@gmail.com</span></address></li>
+						<li class="github"><a href="http://github.com/JacerOmri/" rel="me">github.com/JacerOmri</a></li>
+						<li class="twitter"><a href="http://twitter.com/JacerOmri/" rel="me">twitter.com/JacerOmri</a></li>
+						<li class="rss"><a href="http://feeds.feedburner.com/JacerOmriBlog">Subscribe to RSS Feed</a></li>
+					</ul>
+				</div><!-- misc -->
+				<p class="licence">
+					Theme: <a href="http://layouts-the.me">the_minimum</a> based on <a href="http://jekyllbootstrap.com/">Jekyll-bootstrap</a>.<br>
+					Powered by <a href="https://github.com/mojombo/jekyll">Jekyll</a>.
+				</p>
+			</div><!-- unit-foot-inner -->
+		</div><!-- unit-foot -->
+	</footer>
+</div><!-- page -->
+<script>
+	(function(d, s) {
+		var js, fjs = d.getElementsByTagName(s)[0], load = function(url, id) {
+		if (d.getElementById(id)) {return;}
+		js = d.createElement(s); js.src = url; js.id = id;
+		fjs.parentNode.insertBefore(js, fjs);
+		};
+	load('//platform.twitter.com/widgets.js', 'tweetjs');
+	load('https://apis.google.com/js/plusone.js', 'gplus1js'); // Checkout http://j.mp/ApDgMr for usage html for this is <div class="g-plusone" data-size="medium"></div>
+	load('//connect.facebook.net/en_US/all.js#xfbml=1', 'fbjssdk'); // Checkout http://j.mp/wZw2xR for using open graph protorol html for this is <div class="fb-like" data-href="/2013/07/18/building-a-simple-api-using-node-js" data-send="false" data-layout="button_count" data-width="450" data-show-faces="false" data-font="verdana"></div>
+	}(document, 'script'));
+</script>
+<script>
+/*! A fix for the iOS orientationchange zoom bug.Script by @scottjehl, rebound by @wilto. MIT License.*/
+(function(j){var i=j.document;if(!i.querySelectorAll){return}var l=i.querySelectorAll("meta[name=viewport]")[0],a=l&&l.getAttribute("content"),h=a+", maximum-scale=1.0",d=a+", maximum-scale=10.0",g=true,c=j.orientation,k=0;if(!l){return}function f(){l.setAttribute("content",d);g=true}function b(){l.setAttribute("content",h);g=false}function e(m){c=Math.abs(j.orientation);k=Math.abs(m.gamma);if(k>8&&c===0){if(g){b()}}else{if(!g){f()}}}j.addEventListener("orientationchange",f,false);j.addEventListener("deviceorientation",e,false)})(this);
+</script>
+
+  
+</body>
+</html>
+

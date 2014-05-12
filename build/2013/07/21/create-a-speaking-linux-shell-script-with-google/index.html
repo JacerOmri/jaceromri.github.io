@@ -1,0 +1,264 @@
+
+<!DOCTYPE html>
+<!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7 ie" lang="en"> <![endif]-->
+<!--[if IE 7]>    <html class="no-js lt-ie9 lt-ie8 ie" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="no-js lt-ie9 ie" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+	<title>Create a speaking Linux shell script with Google</title>
+	<meta name="author" content="Jacer Omri">
+	<link href='/assets/themes/the-minimum/css/style.css' rel="stylesheet" media="all">
+	<link href="http://feeds.feedburner.com/" rel="alternate" title="Create a speaking Linux shell script with Google" type="application/atom+xml">
+	<script src="http://cdnjs.cloudflare.com/ajax/libs/modernizr/2.0.6/modernizr.min.js"></script>
+</head>
+<body>
+
+<div id="page" class="hentry">
+	<header class="the-header">
+		<div class="unit-head">
+			<div class="unit-inner unit-head-inner">
+				<p class="logo"><a href="/">Jacer Omri Blog</a></p>
+				<nav class="nav-global">
+					<ul>
+						<li class="archive"><a href="/archive.html">archive</a></li>
+						<li class="page"><a href="/pages.html">pages</a></li>
+						<li class="category"><a href="/categories.html">categories</a></li>
+						<li class="tag"><a href="/tags.html">tags</a></li>
+					</ul>
+				</nav>
+			</div><!-- unit-inner -->
+		</div><!-- unit-head -->
+	</header>
+	<div class="body" role="main">
+		<div class="unit-body">
+			<div class="unit-inner unit-body-inner">
+				<div class="entry-content">
+					
+<article class="unit-article layout-post">
+	<div class="unit-inner unit-article-inner">
+		<div class="content">
+			<header>
+				<div class="unit-head">
+					<div class="unit-inner unit-head-inner">
+						<h1 class="h2 entry-title">Create a speaking Linux shell script with Google</h1>
+					</div><!-- unit-inner -->
+				</div><!-- unit-head -->
+			</header>
+
+			<div class="bd">
+				<div class="entry-content">
+					<p>After <a title="Using Google Translate in PHP" href="http://jacerdass.wordpress.com/2013/07/19/using-google-translate-in-php/" target="_blank">using google to translate text</a> and<a title="Hacking Google Voice API in Linux" href="http://jacerdass.wordpress.com/2013/07/16/hacking-google-voice-api-in-linux/" target="_blank"> decode audio into text</a>, now we are about to make a small <a class="zem_slink" title="Speech synthesis" href="http://en.wikipedia.org/wiki/Speech_synthesis" target="_blank" rel="wikipedia">text to speech engine</a> that uses google too. This is easy and pretty useful. Besides, it supports all languages (it is google, right?)<!--more--></p>
+<p>Let's agree that the script we are about to create should accept 2 arguments: text to transform (required) and input language (optional). If the language is not specified, it would use english as the default value. You should know that the text is going to be transported into a get request to google servers, so we should think to <a class="zem_slink" title="Percent-encoding" href="http://en.wikipedia.org/wiki/Percent-encoding" target="_blank" rel="wikipedia">url-encode</a> it, and here is how</p>
+<pre>rawurlencode() {
+   local string="${1}"
+   local strlen=${#string}
+   local encoded=""
+
+   for (( pos=0 ; pos&lt;strlen ; pos++ )); do
+      c=${string:$pos:1}
+      case "$c" in
+         [-_.~a-zA-Z0-9] ) o="${c}" ;;
+         * ) printf -v o '%%%02x' "'$c"
+      esac
+     encoded+="${o}"
+   done
+   echo "${encoded}"
+}</pre>
+<p>This function doesn't rely on any external tools and it does the job very well!  Next thing is to check the inputs, i mean language and text</p>
+<pre>if [ -z "$1" ]
+ then
+   echo "No text specified, exiting"
+   exit
+ else
+   TEXT=$( rawurlencode "$1" )
+fiif [ -z "$2" ]
+ then
+   echo "No language supplied, using en"
+   LANG="en"
+ else
+   LANG="$2"
+fi</pre>
+<p>We set the script to expect a first parameter and store it in <em>TEXT</em> variable after url-encoding it. If text in not specified, the script would exit. Then it checks if a language is specified and store it in <em>LANG</em> variable, otherwise <em>LANG</em> would equal <strong>en</strong>. Now let's see how is interacting with google TTS engine is possible. After a minute with the google translator web page, i realised that was not hard to get at all. The api url looks like this</p>
+<pre>API="http://translate.google.com/translate_tts?ie=UTF-8&amp;tl=$LANG&amp;q=$TEXT"</pre>
+<p>As you can see, this new <em>API</em> variable holds the url to be used later. This url returns an MP3 file, so we should save it temporally, best way to choose a name for it is to use MD5 hash</p>
+<pre>hash="$(echo -n "$TEXT" | md5sum )"</pre>
+<p>Before proceeding, i should tell you that the above url is protected against wget, it only accepts requests from browser, but when was this a problem? Let's define the <a class="zem_slink" title="User agent" href="http://en.wikipedia.org/wiki/User_agent" target="_blank" rel="wikipedia">UserAgent</a> string to use</p>
+<pre>UA="Mozilla/5.0 (Windows NT 6.2; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/29.0.1547.2 Safari/537.36"</pre>
+<p>This is the latest <a class="zem_slink" title="Google Chrome" href="http://www.google.com/chrome" target="_blank" rel="homepage">Google Chrome</a> version in the time i'm writing this. It is even not stable yet lol. Time to make the long waited request!</p>
+<pre>wget -o /dev/null --user-agent="$UA" -O "/tmp/$hash.mp3" "$API"</pre>
+<p>Now we tell wget to grab the audio file and store it <strong>/tmp</strong> folder with the <em>hash</em> name we have already created. The request will go as if it was issued through a browser thanks to the <strong>--user-agent</strong> option. Now we need a tool that would play a sound file in <a class="zem_slink" title="Command-line interface" href="http://en.wikipedia.org/wiki/Command-line_interface" target="_blank" rel="wikipedia">cli mode</a>, i have chosen a lightweight one called <strong><a class="zem_slink" title="Mpg123" href="http://mpg123.org" target="_blank" rel="homepage">mpg123</a></strong>, go ahead and install it if you didn't</p>
+<pre>sudo apt-get install mpg123</pre>
+<p>Let's get back to the talking script, we know exactly where we have left the audio file, time to give <strong>mpg123</strong> a try</p>
+<pre>mpg123 -q "/tmp/$hash.mp3"</pre>
+<p>Hurray! this is the part of  the script that plays the sound, this is exciting! one last thing to do is to remove the temporary audio file</p>
+<pre>rm "/tmp/$hash.mp3"</pre>
+<p>Now the script is ready to use! check <a href="https://gist.github.com/JokerHacker/6047812" target="_blank">my gist here</a> to find a full script file, download it and test it, you may probably want to hear things like</p>
+<pre>./googleTTS.sh "damn i'm a geek"
+./googleTTS.sh "j'aime google!" fr</pre>
+<p>don't forget to make the script file executable before running it</p>
+<pre>chmod +x googleTTS.sh</pre>
+<p>This would be really powerful if combined with the previous <a title="Hacking Google Voice API in Linux" href="http://jacerdass.wordpress.com/2013/07/16/hacking-google-voice-api-in-linux/">voice to text decoder</a> You can make much more improvements on this one, maybe a caching system is an obvious need. I should leave you playing around with it, you can use a spell checker (i would explain how if you want) with it or you can put it everywhere on your system and feel like Tony Stark lol<br />
+Leave a comment in the box below to tell us how was your experience with this, maybe you want to subscribe or follow me on social medias too.</p>
+<p><img class="aligncenter" alt="" src="http://blogs.adobe.com/aftereffects/files/2013/01/Iron_Man_HUD_MarkVII_Leviathan_Analysis_full_624_351.png" width="624" height="351" /></p>
+
+					<div class="meta">
+						<p class="date-publish">
+							Published: 
+							<date class="date-pub" title="2013-07-21T00:00:00+01:00" datetime="2013-07-21T00:00:00+01:00" pubdate>
+							<span class="month"><abbr>July</abbr></span>
+							<span class="day">21</span>
+							<span class="year">2013</span>
+							</date>
+						</p>
+						<ul class="list-category list-linear">
+							<li class="list-head">category: </li>
+							
+							
+
+
+  
+     
+    	<li><a href="/categories.html#Tutorials-ref">
+    		Tutorials <span>9</span>
+    	</a></li>
+    
+  
+
+
+						</ul>
+						<ul class="list-tag list-linear">
+							<li class="list-head">tags: </li>
+							
+							
+
+
+  
+     
+    	<li><a href="/tags.html#api-ref">api <span>2</span></a></li>
+     
+    	<li><a href="/tags.html#Google-ref">Google <span>2</span></a></li>
+     
+    	<li><a href="/tags.html#hack-ref">hack <span>2</span></a></li>
+     
+    	<li><a href="/tags.html#linux-ref">linux <span>7</span></a></li>
+     
+    	<li><a href="/tags.html#Shell script-ref">Shell script <span>2</span></a></li>
+     
+    	<li><a href="/tags.html#Text to speech-ref">Text to speech <span>1</span></a></li>
+     
+    	<li><a href="/tags.html#TTS-ref">TTS <span>1</span></a></li>
+    
+  
+
+
+
+						</ul>
+					</div><!-- meta -->
+				</div><!-- entry-content -->
+				<div class="misc-content">
+					<div class="social">
+						<ul class="list-linear">
+							<li><div class="twitter-tweet"><a href="https://twitter.com/share" class="twitter-share-button" data-count="horizontal" data-via="JacerOmri" data-lang="en">Tweet</a></div></li>
+							<li><div class="twitter-follow"><a href="https://twitter.com/JacerOmri" class="twitter-follow-button" data-show-count="false" data-lang="en"></a></div></li>
+							<li><div class="g-plusone" data-size="medium"></div></li>
+							<li><div class="fb-like" data-href="/2013/07/21/create-a-speaking-linux-shell-script-with-google" data-send="false" data-layout="button_count" data-width="450" data-show-faces="false" data-font="verdana"></div></li>
+						</ul>
+					</div>
+					
+					
+
+
+  <div id="disqus_thread"></div>
+<script type="text/javascript">
+    var disqus_developer = 1;
+    var disqus_shortname = 'jaceromriblog'; // required: replace example with your forum shortname
+    
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+
+
+				</div><!-- misc-content -->
+				
+			</div><!-- bd -->
+			<footer class="unit-foot">
+				<div class="unit-inner unit-foot-inner">
+					<nav class="pagination">
+						<ul>
+							
+							<li class="prev"><a class="internal" rel="prev"  href="/2013/07/20/enjoy-the-new-wine-1-6" title="View Enjoy the new Wine 1.6">&laquo; Enjoy the new Wine 1.6</a></li>
+							
+							
+							<li class="pipe"> | </li>
+							
+							
+							<li class="next"><a class="internal" rel="next"  href="/2013/07/22/introducing-the-new-ubuntu-edge" title="View Introducing the new Ubuntu Edge">Introducing the new Ubuntu Edge &raquo;</a></li>
+							
+						</ul>
+					</nav>
+					<p class="gotop">
+						<a href="#page">Back to Top</a>
+					</p>
+				</div>
+			</footer>
+
+		</div><!-- content -->
+	</div><!-- unit-inner -->
+</article>
+
+
+				</div>
+			</div><!-- unit-inner -->
+		</div><!-- unit-body -->
+	</div><!-- body -->
+	<footer class="the-footer">
+		<div class="unit-foot">
+			<div class="unit-inner unit-foot-inner">
+				<div class="misc vcard">
+					<h4>about</h4>
+					<ul>
+						<li class="contact"><address><span class="author fn n">Jacer Omri</span> - <span class="fn email">jokerhacker.jacer@gmail.com</span></address></li>
+						<li class="github"><a href="http://github.com/JacerOmri/" rel="me">github.com/JacerOmri</a></li>
+						<li class="twitter"><a href="http://twitter.com/JacerOmri/" rel="me">twitter.com/JacerOmri</a></li>
+						<li class="rss"><a href="http://feeds.feedburner.com/JacerOmriBlog">Subscribe to RSS Feed</a></li>
+					</ul>
+				</div><!-- misc -->
+				<p class="licence">
+					Theme: <a href="http://layouts-the.me">the_minimum</a> based on <a href="http://jekyllbootstrap.com/">Jekyll-bootstrap</a>.<br>
+					Powered by <a href="https://github.com/mojombo/jekyll">Jekyll</a>.
+				</p>
+			</div><!-- unit-foot-inner -->
+		</div><!-- unit-foot -->
+	</footer>
+</div><!-- page -->
+<script>
+	(function(d, s) {
+		var js, fjs = d.getElementsByTagName(s)[0], load = function(url, id) {
+		if (d.getElementById(id)) {return;}
+		js = d.createElement(s); js.src = url; js.id = id;
+		fjs.parentNode.insertBefore(js, fjs);
+		};
+	load('//platform.twitter.com/widgets.js', 'tweetjs');
+	load('https://apis.google.com/js/plusone.js', 'gplus1js'); // Checkout http://j.mp/ApDgMr for usage html for this is <div class="g-plusone" data-size="medium"></div>
+	load('//connect.facebook.net/en_US/all.js#xfbml=1', 'fbjssdk'); // Checkout http://j.mp/wZw2xR for using open graph protorol html for this is <div class="fb-like" data-href="/2013/07/21/create-a-speaking-linux-shell-script-with-google" data-send="false" data-layout="button_count" data-width="450" data-show-faces="false" data-font="verdana"></div>
+	}(document, 'script'));
+</script>
+<script>
+/*! A fix for the iOS orientationchange zoom bug.Script by @scottjehl, rebound by @wilto. MIT License.*/
+(function(j){var i=j.document;if(!i.querySelectorAll){return}var l=i.querySelectorAll("meta[name=viewport]")[0],a=l&&l.getAttribute("content"),h=a+", maximum-scale=1.0",d=a+", maximum-scale=10.0",g=true,c=j.orientation,k=0;if(!l){return}function f(){l.setAttribute("content",d);g=true}function b(){l.setAttribute("content",h);g=false}function e(m){c=Math.abs(j.orientation);k=Math.abs(m.gamma);if(k>8&&c===0){if(g){b()}}else{if(!g){f()}}}j.addEventListener("orientationchange",f,false);j.addEventListener("deviceorientation",e,false)})(this);
+</script>
+
+  
+</body>
+</html>
+

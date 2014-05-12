@@ -1,0 +1,862 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+ 
+ <title>Jacer Omri Blog</title>
+ <link href="http://jaceromri.github.io/" rel="self"/>
+ <link href="http://jaceromri.github.io"/>
+ <updated>2014-05-12T16:12:47+01:00</updated>
+ <id>http://jaceromri.github.io</id>
+ <author>
+   <name>Jacer Omri</name>
+   <email>jokerhacker.jacer@gmail.com</email>
+ </author>
+
+ 
+ <entry>
+   <title>Most efficient way to deal with 3G modems in Ubuntu</title>
+   <link href="http://jaceromri.github.io/2013/12/03/most-efficient-way-to-deal-with-3g-modems-in-ubuntu"/>
+   <updated>2013-12-03T00:00:00+01:00</updated>
+   <id>http://jaceromri.github.io/2013/12/03/most-efficient-way-to-deal-with-3g-modems-in-ubuntu</id>
+   <content type="html">&lt;p&gt;It's been a while since the last time I wrote on my blog. Today I thought I should talk about the issues met when using 3G &lt;a class=&quot;zem_slink&quot; title=&quot;Universal Serial Bus&quot; href=&quot;http://en.wikipedia.org/wiki/Universal_Serial_Bus&quot; target=&quot;_blank&quot; rel=&quot;wikipedia&quot;&gt;USB&lt;/a&gt; modems on &lt;a class=&quot;zem_slink&quot; title=&quot;Ubuntu (operating system)&quot; href=&quot;http://www.ubuntu.com&quot; target=&quot;_blank&quot; rel=&quot;homepage&quot;&gt;Ubuntu&lt;/a&gt; (&lt;a class=&quot;zem_slink&quot; title=&quot;Linux distribution&quot; href=&quot;http://en.wikipedia.org/wiki/Linux_distribution&quot; target=&quot;_blank&quot; rel=&quot;wikipedia&quot;&gt;Linux distros&lt;/a&gt; generally) since I noticed that it annoys many people because they don't work properly.&lt;!--more--&gt;&lt;/p&gt;
+&lt;p&gt;Some years ago I came up with a small workaround to this problem when I encountered it for the first time. I used usb_modswitch to properly recognise the device. Then I wrapped it in a script and started distributing it to my friends. Soon, I realized that this wasn't a solution, it did work sometimes, but it wasn't efficient.&lt;/p&gt;
+&lt;p&gt;So I started digging deeper to find alternative solutions, and I've seen the &quot;sakis3g&quot; project. This project, seemed immature for me in the first time, is script which uses usb_modswitch mainly to make these devices switch from mass storage mode to modem mode. After more releases of this project, it have been becoming more efficient and stable. I tried it on many machines and it worked on all cases so far.&lt;/p&gt;
+&lt;h2&gt;Installing Sakis3g&lt;/h2&gt;
+&lt;p&gt;there are 2 available options to get sakis3g working on your machine:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a class=&quot;zem_slink&quot; title=&quot;Compiler&quot; href=&quot;http://en.wikipedia.org/wiki/Compiler&quot; target=&quot;_blank&quot; rel=&quot;wikipedia&quot;&gt;compiling&lt;/a&gt; the &lt;a class=&quot;zem_slink&quot; title=&quot;Source code&quot; href=&quot;http://en.wikipedia.org/wiki/Source_code&quot; target=&quot;_blank&quot; rel=&quot;wikipedia&quot;&gt;source code&lt;/a&gt; (if you're geeky enough).&lt;/li&gt;
+&lt;li&gt;installing it from a ppa.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;Compiling sakis3g&lt;/h3&gt;
+&lt;p&gt;To compile sakis3g , we need to get the source code from github and compile it. This is done using these commands:&lt;/p&gt;
+&lt;pre&gt;git clone https://github.com/trixarian/sakis3g-source.git
+ cd sakis3g-source
+ mkdir build
+ ./compile
+ &lt;a class=&quot;zem_slink&quot; title=&quot;Sudo&quot; href=&quot;http://www.sudo.ws&quot; target=&quot;_blank&quot; rel=&quot;homepage&quot;&gt;sudo&lt;/a&gt; cp build/sakis3gz /usr/bin/sakis3g&lt;/pre&gt;
+&lt;h3&gt; Installing from &lt;a class=&quot;zem_slink&quot; title=&quot;Personal Package Archive&quot; href=&quot;http://en.wikipedia.org/wiki/Personal_Package_Archive&quot; target=&quot;_blank&quot; rel=&quot;wikipedia&quot;&gt;PPA&lt;/a&gt;&lt;/h3&gt;
+&lt;p&gt;getting packages from PPAs saves up a great deal of time and effort. I found a ppa that holds sakis3g even for the latest release of ubuntu (saucy). To add the ppa and install sakis3g:&lt;/p&gt;
+&lt;pre&gt;sudo add-apt-repository ppa:darklordpaunik8880/darksmsaucy
+sudo &lt;a class=&quot;zem_slink&quot; title=&quot;Advanced Packaging Tool&quot; href=&quot;http://wiki.debian.org/Apt&quot; target=&quot;_blank&quot; rel=&quot;homepage&quot;&gt;apt-get&lt;/a&gt; update
+sudo apt-get install sakis3g&lt;/pre&gt;
+&lt;h4&gt;Update for trusty tahr users (ubuntu 14.04)&lt;/h4&gt;
+&lt;p&gt;Ubuntu 14.04 need to use a new ppa to grab the binary package.&lt;/p&gt;
+&lt;pre&gt;sudo add-apt-repository ppa:darklordpaunik8880/darkminttrustytahr
+sudo &lt;a class=&quot;zem_slink&quot; title=&quot;Advanced Packaging Tool&quot; href=&quot;http://wiki.debian.org/Apt&quot; target=&quot;_blank&quot; rel=&quot;homepage&quot;&gt;apt-get&lt;/a&gt; update
+sudo apt-get install sakis3g&lt;/pre&gt;
+&lt;p&gt;Here we go, sakis3g is now installed&lt;/p&gt;
+&lt;h2&gt;Using Sakis3g&lt;/h2&gt;
+&lt;p&gt;I will not go through &lt;a class=&quot;zem_slink&quot; title=&quot;Command-line interface&quot; href=&quot;http://en.wikipedia.org/wiki/Command-line_interface&quot; target=&quot;_blank&quot; rel=&quot;wikipedia&quot;&gt;command lines&lt;/a&gt; anymore, since saki3g offers us a nice &lt;a class=&quot;zem_slink&quot; title=&quot;Graphical user interface&quot; href=&quot;http://en.wikipedia.org/wiki/Graphical_user_interface&quot; target=&quot;_blank&quot; rel=&quot;wikipedia&quot;&gt;graphical interface&lt;/a&gt; to use it. But to enable this interface we need to one last command&lt;/p&gt;
+&lt;pre&gt;sudo sakis3g desktop&lt;/pre&gt;
+&lt;p&gt;this command will create a launcher on the desktop. Go ahead and launch it, I'm pretty sure you will know how to use it ;)&lt;/p&gt;
+&lt;div&gt;
+&lt;div&gt;
+&lt;div id=&quot;js-repo-pjax-container&quot;&gt;
+&lt;div id=&quot;readme&quot;&gt;
+&lt;article&gt;[caption id=&quot;attachment_210&quot; align=&quot;aligncenter&quot; width=&quot;340&quot;]&lt;a href=&quot;http://jacerdass.files.wordpress.com/2013/12/screenshot-from-2013-09-28-20-42-13.png&quot;&gt;&lt;img class=&quot;size-full wp-image-210 &quot; alt=&quot;Sakis3g Screenshot&quot; src=&quot;http://jacerdass.files.wordpress.com/2013/12/screenshot-from-2013-09-28-20-42-13.png&quot; width=&quot;340&quot; height=&quot;238&quot; /&gt;&lt;/a&gt; Sakis3g Screenshot[/caption]
+&lt;p&gt;I would recommend not to configure connection through sakis3g since it's a bit buggy, make a new broadband connection from your network manager and use sakis3g just to switch you modem, then connect using the previously created configuration.&lt;/p&gt;
+&lt;p&gt;Don't forget to share :)&lt;/p&gt;
+&lt;/article&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Ignore Linus, C++ is fun</title>
+   <link href="http://jaceromri.github.io/2013/08/03/ignore-torvalds-cpp-is-fun"/>
+   <updated>2013-08-03T00:00:00+01:00</updated>
+   <id>http://jaceromri.github.io/2013/08/03/ignore-torvalds-cpp-is-fun</id>
+   <content type="html">&lt;p&gt;The &lt;a class=&quot;zem_slink&quot; title=&quot;Wars of the Roses&quot; href=&quot;http://en.wikipedia.org/wiki/Wars_of_the_Roses&quot; target=&quot;_blank&quot; rel=&quot;wikipedia&quot;&gt;War of the Roses&lt;/a&gt; had nothing on the language wars. Since the beginning of my computing career, I've watched developers fight over the relative virtues of &lt;a class=&quot;zem_slink&quot; title=&quot;Programming language&quot; href=&quot;http://en.wikipedia.org/wiki/Programming_language&quot; target=&quot;_blank&quot; rel=&quot;wikipedia&quot;&gt;programming languages&lt;/a&gt;... from C versus &lt;a class=&quot;zem_slink&quot; title=&quot;Pascal (programming language)&quot; href=&quot;http://en.wikipedia.org/wiki/Pascal_%28programming_language%29&quot; target=&quot;_blank&quot; rel=&quot;wikipedia&quot;&gt;Pascal&lt;/a&gt; to &lt;a class=&quot;zem_slink&quot; title=&quot;Ruby (programming language)&quot; href=&quot;http://www.ruby-lang.org/&quot; target=&quot;_blank&quot; rel=&quot;homepage&quot;&gt;Ruby&lt;/a&gt; versus &lt;a class=&quot;zem_slink&quot; title=&quot;Python (programming language)&quot; href=&quot;http://www.python.org/&quot; target=&quot;_blank&quot; rel=&quot;homepage&quot;&gt;Python&lt;/a&gt;. What &lt;em&gt;is&lt;/em&gt; it about this subject that brings out such passion?&lt;!--more--&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a class=&quot;zem_slink&quot; title=&quot;Linus Torvalds&quot; href=&quot;http://torvalds-family.blogspot.com&quot; target=&quot;_blank&quot; rel=&quot;homepage&quot;&gt;Linus Torvalds&lt;/a&gt; has gotten into the fray, posting a message on a techie list in which he says outright that &lt;a href=&quot;http://thread.gmane.org/gmane.comp.version-control.git/57643/focus=57918&quot;&gt;C++ is a horrible language.&lt;/a&gt; &quot;It's made more horrible by the fact that a lot of substandard programmers use it, to the point where it's much much easier to generate total and utter crap with it. Quite frankly, even if the choice of C were to do &lt;em&gt;nothing&lt;/em&gt; but keep the C++ programmers out, that in itself would be a huge reason to use C.&quot;&lt;/p&gt;
+&lt;p&gt;According to Torvalds — yes, the &lt;strong&gt;Linus&lt;/strong&gt; of &lt;strong&gt;&lt;a class=&quot;zem_slink&quot; title=&quot;Linux&quot; href=&quot;http://en.wikipedia.org/wiki/Linux&quot; target=&quot;_blank&quot; rel=&quot;wikipedia&quot;&gt;Linux&lt;/a&gt;&lt;/strong&gt; — C++ leads to really really bad design choices. He says that developers &quot;invariably start using the 'nice' library features of the language like STL and Boost and other total and utter crap,&quot; that may &quot;help&quot; you program, but they cause infinite amounts of pain when they don't work and inefficient abstracted programming models.&lt;/p&gt;
+&lt;p&gt;We all do respect this man's point of view as he has clearly proved that he know what he is doing and saying for last 2 decades. Nowadays, a good programmer is the one who know the right tool to use for each situation, including programming languages. The funny part is that i came across a C++ code snippet that I instantly wanted to share it. These very few lines here are genius!&lt;/p&gt;
+&lt;pre&gt;#include &amp;lt;cstdio&amp;gt;double m[]= {7709179928849219.0, 771};
+int main()
+{
+m[1]--?m[0]*=2,main():printf((char*)m);
+}&lt;/pre&gt;
+&lt;p&gt;There is absolutely no way to tell what this code is capable of when you just look at it. Calm down, it is not a virus lol. It simply outputs&lt;/p&gt;
+&lt;pre&gt;C++Sucks&lt;/pre&gt;
+&lt;p&gt;Magic? maybe! I will quote&lt;strong&gt; dasblinkenlight&lt;/strong&gt;'s explanation for this:&lt;/p&gt;
+&lt;blockquote&gt;&lt;p&gt;The number &lt;code&gt;7709179928849219.0&lt;/code&gt; has the following &lt;a class=&quot;zem_slink&quot; title=&quot;Binary number&quot; href=&quot;http://en.wikipedia.org/wiki/Binary_number&quot; target=&quot;_blank&quot; rel=&quot;wikipedia&quot;&gt;binary representation&lt;/a&gt; as a 64-bit &lt;code&gt;double&lt;/code&gt;:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;01000011 00111011 01100011 01110101 01010011 00101011 00101011 01000011
++^^^^^^^ ^^^^---- -------- -------- -------- -------- -------- --------&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;code&gt;+&lt;/code&gt; shows the position of the sign; &lt;code&gt;^&lt;/code&gt; of the &lt;a class=&quot;zem_slink&quot; title=&quot;Exponentiation&quot; href=&quot;http://en.wikipedia.org/wiki/Exponentiation&quot; target=&quot;_blank&quot; rel=&quot;wikipedia&quot;&gt;exponent&lt;/a&gt;, and &lt;code&gt;-&lt;/code&gt; of the mantissa (i.e. the value without the exponent).&lt;/p&gt;
+&lt;p&gt;Since the representation uses binary exponent and mantissa, doubling the number increments the exponent by one. Your program does it precisely 771 times, so the exponent which started at 1075 (decimal representation of &lt;code&gt;10000110011&lt;/code&gt;) becomes 1075 + 771 = 1846 at the end; binary representation of 1846 is &lt;code&gt;11100110110&lt;/code&gt;. The resultant pattern looks like this:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;01110011 01101011 01100011 01110101 01010011 00101011 00101011 01000011
+-------- -------- -------- -------- -------- -------- -------- --------
+0x73 's' 0x6B 'k' 0x63 'c' 0x75 'u' 0x53 'S' 0x2B '+' 0x2B '+' 0x43 'C'&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;This pattern corresponds to the string that you see printed, only backwards. At the same time, the second element of the array becomes zero, providing &lt;a class=&quot;zem_slink&quot; title=&quot;Null character&quot; href=&quot;http://en.wikipedia.org/wiki/Null_character&quot; target=&quot;_blank&quot; rel=&quot;wikipedia&quot;&gt;null terminator&lt;/a&gt;, making the string suitable for passing to &lt;code&gt;printf&lt;/code&gt;.&lt;/p&gt;&lt;/blockquote&gt;
+&lt;p&gt;Such code cannot be useful, it is more accurate to call it &quot;useless headache&quot; but it is still funny! Note that i am not judging such a huge programming language nor agreeing with Linus Torvalds, I believe in diversity and that every tool has its own use, but it seemed funny to share this. Subscribe to this blog and follow me on twitter to get more updates in the computer world.&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>10 Productivity tips for software developers</title>
+   <link href="http://jaceromri.github.io/2013/08/02/10-productivity-tips-for-software-developers"/>
+   <updated>2013-08-02T00:00:00+01:00</updated>
+   <id>http://jaceromri.github.io/2013/08/02/10-productivity-tips-for-software-developers</id>
+   <content type="html">&lt;p&gt;After attending a few seminars on the topic of &lt;a class=&quot;zem_slink&quot; title=&quot;Productivity&quot; href=&quot;http://en.wikipedia.org/wiki/Productivity&quot; target=&quot;_blank&quot; rel=&quot;wikipedia&quot;&gt;productivity&lt;/a&gt; and &lt;a class=&quot;zem_slink&quot; title=&quot;Time management&quot; href=&quot;http://en.wikipedia.org/wiki/Time_management&quot; target=&quot;_blank&quot; rel=&quot;wikipedia&quot;&gt;time management&lt;/a&gt; and reading a couple of books on the subject, I was introduced to some profound concepts and made some great realizations about the way I used to work. With this new knowledge, I completely redesigned my workflow framework something that lead in a tremendous boost of my productivity.&lt;!--more--&gt;&lt;/p&gt;
+&lt;p&gt;I would like to share with you the most important tips that will help you boost your productivity, increase your overall output and, perhaps most importantly, free you time to spend in other activities.&lt;/p&gt;
+&lt;p&gt;Note that the following tips can be applied to both personal and professional aspects, the principles are essentially the same.&lt;/p&gt;
+&lt;p&gt;So, let’s hit the road…&lt;/p&gt;
+&lt;h1&gt;Never, ever, ever read e-mails first thing in the morning&lt;/h1&gt;
+&lt;p&gt;If there is one thing to keep from this article, then this is it. Again, never read e-mails first thing in the morning. If you do, you will automatically be positioned in a reactive and passive mode instead of the active and creative mode we want to be.&lt;/p&gt;
+&lt;p&gt;Check and respond to e-mails only in predefined time windows within the day. Those should be before launch break, let’s say around 12.00-13.00, and then again at around 16.00, when your energy levels will be low anyway so you won’t lose any productive energy. Don’t worry, this “urgent” e-mail, is not really that urgent.&lt;/p&gt;
+&lt;h1&gt;Avoid meetings if you can&lt;/h1&gt;
+&lt;p&gt;Meetings are the number one productivity killers in the corporate environment. There I said it. You know it, I know it, everybody knows (but perhaps won’t admit).&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;“Meetings are an addictive, highly self-indulgent activity that corporations and other large organizations habitually engage in only because they cannot actually masturbate.”&lt;/em&gt; – &lt;a class=&quot;zem_slink&quot; title=&quot;Dave Barry&quot; href=&quot;http://www.davebarry.com&quot; target=&quot;_blank&quot; rel=&quot;homepage&quot;&gt;Dave Barry&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;Yeap, this pretty much sums it up. What is most interesting is that a meeting kills the productivity of multiple people at the same time. Amazing. So, if it is not absolutely critical to attend, just skip it. Say that you have a lot in your hands (which is probably true) and arrange to check with a colleague after the meeting to fill you in about the important stuff.&lt;/p&gt;
+&lt;p&gt;If it is really important to hold a meeting (this should be rare actually), then keep these things in mind:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Do it late in the afternoon when your productivity is down anyway.&lt;/li&gt;
+&lt;li&gt;Always have an agenda of topics to be discussed. Don’t deviate from those.&lt;/li&gt;
+&lt;li&gt;Set up a strict end time. Call the meeting off when this time comes.&lt;/li&gt;
+&lt;li&gt;Don’t leave the room without clear, actionable next steps.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1&gt;Eliminate distractions&lt;/h1&gt;
+&lt;p&gt;This is huge. The world in the information age is full of distractions coming in every possible way and keeping you from getting things done. I would classify distractions in two main categories: those that we create ourselves and those that are created by others.&lt;/p&gt;
+&lt;p&gt;Let’s start with the distractions that we create ourselves. This seems odd to think about, but the truth is that we manage to keep ourselves from being productive, even if we do not do this consciously. Examples are abundant: setting up our e-mail and social media accounts to “notify” us when something “important” happens, switching between different tasks like maniacs, getting a quick “fix” at &lt;a class=&quot;zem_slink&quot; title=&quot;Hacker News&quot; href=&quot;http://news.ycombinator.com/&quot; target=&quot;_blank&quot; rel=&quot;homepage&quot;&gt;Hacker News&lt;/a&gt; or &lt;a class=&quot;zem_slink&quot; title=&quot;Reddit&quot; href=&quot;http://reddit.com/&quot; target=&quot;_blank&quot; rel=&quot;homepage&quot;&gt;Reddit&lt;/a&gt; and the list goes on.&lt;/p&gt;
+&lt;p&gt;The thing is that you should setup your work environment in a way that when you are actually on a task, there is nothing to distract you. Begin by switching off all your notifications, be it text messages on your mobile, &lt;a class=&quot;zem_slink&quot; title=&quot;Facebook&quot; href=&quot;http://facebook.com&quot; target=&quot;_blank&quot; rel=&quot;homepage&quot;&gt;Facebook&lt;/a&gt; updates etc. Next, exit your e-mail application or if you decide to leave it on, make sure that the automatic Send/Receive option is disabled. Then, eliminate access to any non productive sites that you usually hang like &lt;a class=&quot;zem_slink&quot; title=&quot;DZone&quot; href=&quot;http://www.dzone.com&quot; target=&quot;_blank&quot; rel=&quot;homepage&quot;&gt;DZone&lt;/a&gt;, Hacker News etc. Note that I did not say “don’t use”, I used the phrase “eliminate access”. We are all geeks here so I trust you that you will find the technical way to accomplish this. You can use a low level approach of editing your machine’s “hosts” file to make facebook.com point to 127.0.0.1 or using a plugin to temporarily restrict access to those sites. I personally use the &lt;a title=&quot;&quot; href=&quot;https://addons.mozilla.org/en-us/firefox/addon/blocksite/&quot; target=&quot;_blank&quot; rel=&quot;nofollow external&quot;&gt;Blocksite plugin&lt;/a&gt;. With this setup, you will be in a position where you have eliminated the majority of the distractions that you essentially cause yourself.&lt;/p&gt;
+&lt;p&gt;Let’s move on to the distractions that other people cause. You could argue that some of the above distractions are caused by other people but the hard truth is that you cause them yourself since nobody forces you to check &lt;a class=&quot;zem_slink&quot; title=&quot;Twitter&quot; href=&quot;http://twitter.com/twitter&quot; target=&quot;_blank&quot; rel=&quot;twitter&quot;&gt;Twitter&lt;/a&gt; or Facebook. What I refer to here are “obtrusive” distractions. For example, how many times this scenario has happened to you? You get an e-mail by your manager and then he calls you to ask you if you got said e-mail. Talk about productivity. Or what about this: A colleague pokes you while you are debugging your code and asks you how something trivial is accomplished in Java and the first response that comes to your mind is “&lt;em&gt;Google it, bitch!&lt;/em&gt;“.&lt;/p&gt;
+&lt;p&gt;In reality, those distractions are a bit tricky to defend yourself from because it is easy to go overboard and pass the limits of what is socially acceptable. Some ideas would be using headphones (though I have found that even this does not work sometimes), allowing the incoming calls to go to &lt;a class=&quot;zem_slink&quot; title=&quot;Voice-mail&quot; href=&quot;http://en.wikipedia.org/wiki/Voice-mail&quot; target=&quot;_blank&quot; rel=&quot;wikipedia&quot;&gt;voice mail&lt;/a&gt; and checking them later, hanging a piece of paper on your &lt;a class=&quot;zem_slink&quot; title=&quot;Personal computer&quot; href=&quot;http://en.wikipedia.org/wiki/Personal_computer&quot; target=&quot;_blank&quot; rel=&quot;wikipedia&quot;&gt;PC&lt;/a&gt; that says “&lt;em&gt;Do not disturb, coding in progress&lt;/em&gt;” etc. You will have to gauge what would be appropriate in your work establishment and proceed accordingly. The goal is to allow for an uninterrupted workflow.&lt;/p&gt;
+&lt;h1&gt;Prepare a list of tasks to do the night before&lt;/h1&gt;
+&lt;p&gt;The previous night you should make a clean list of tasks that is important to be accomplished the day that follows. I am not talking about huge lists of several items, this never works. Instead, pinpoint 2-3 important tasks, those that if performed, significant progress will occur in your projects. It should go like this: “&lt;em&gt;If I only accomplish these two tasks today, will I feel productive about my day?&lt;/em&gt;“. If yes, jot them down.&lt;/p&gt;
+&lt;h1&gt;Do the most important tasks first&lt;/h1&gt;
+&lt;p&gt;As mentioned above, e-mails should never be the first thing to deal with. So, what would that be? The most important task in the list! You have identified the single most crucial task so, you sit down and deal with it without thinking about anything else. Ideally, you should finish this in “one seating”. Take a short break and then proceed with the second most major task in your list. I will talk in a later section about how to alternate work and breaks for optimal results.&lt;/p&gt;
+&lt;h1&gt;Batching is not only for databases&lt;/h1&gt;
+&lt;p&gt;I am sure that most of you are familiar with the concept of query batching. In short, you “batch” a lot of similar DB queries and send only one request in the database which allows for better performance. Optimization at its best. Guess what, you can use the same principles for your own tasks! WIth that way, you will minimize the activation costs and various overheads that come with certain tasks. Good examples of tasks that batching can be applied to are e-mail checking (notice a pattern here?), phone calls and generally any menial, repetitive work.&lt;/p&gt;
+&lt;h1&gt;Automate like there is no tomorrow&lt;/h1&gt;
+&lt;p&gt;Another thing to add to your productivity toolbox is the concept of automation. As programmers, we live essentially in quite an automated environment but yet I have seen several incidents where people resolve to manually performing a menial, mundane task which could easily be automated. Look, humans fail, are less reliable than machines and fail even more when the task at hand is boring and insignificant. Strive to automate as many of the tasks as possible. Examples would be performing a full application build with just one click, deploying to production servers using only one script etc. Seriously, do not lose mental and physical energy performing something that a machine would perform faster, more reliably and without your involvement.&lt;/p&gt;
+&lt;h1&gt;Alternate “work” and “play” for maximum results&lt;/h1&gt;
+&lt;p&gt;So, it is now time to talk about how to actually set up a work framework. What I would like to suggest is allocating specific time periods that would be earmarked as “work” and time periods that would be assigned as “break” or even better “play”.&lt;/p&gt;
+&lt;p&gt;For example, you would dedicate 45 minutes of continuous, focused work on a specific task and then, follow that up with a 15 minutes break where you can surf the internet, check your social media updates, read the latest articles from your favorite websites etc. Make sure to move your eyes away from the screen during the break and definitely getting some mild physical action. Seriously, sitting can kill you, stand up and walk.&lt;/p&gt;
+&lt;p&gt;The concept is that, among other things, the “play” time period would serve as a reward to yourself for having the discipline to plow through the longer time period of working. Our minds are mysterious things but I can assure you that setting up a reward mechanism like this will help you accomplish more stuff and have some fun time as well.&lt;/p&gt;
+&lt;p&gt;On the technical side of accomplishing this, there are numerous timer applications and you can also experiment with the &lt;a title=&quot;&quot; href=&quot;http://en.wikipedia.org/wiki/Pomodoro_Technique&quot; target=&quot;_blank&quot; rel=&quot;nofollow external&quot;&gt;Pomodoro technique&lt;/a&gt;.&lt;/p&gt;
+&lt;h1&gt;Jot everything down&lt;/h1&gt;
+&lt;p&gt;What I refer to here is making the habit of noting everything down. Whether it is a new idea you have, a new approach you would like to follow for a problem you are trying to solve or a bill you have to pay tomorrow. You have to make sure that your brain’s capacity is not consumed by “remembering stuff” but on focusing on the specific goal you are trying to accomplish.&lt;/p&gt;
+&lt;p&gt;Think of your brain as a computer CPU. The “stuff” you assign to it is similar to launching several process in the background. It will eventually cause it to hang and not work properly. The process of jotting things down will offload your brain and allow it to perform in a more optimal way.&lt;/p&gt;
+&lt;p&gt;Make separate lists and categorize those thoughts you have. Lists could include “Potential Projects”, “Thing to buy”, “Development” etc., so that you can quickly scan through them later on.&lt;/p&gt;
+&lt;h1&gt;Leverage “flow” – Working “in the zone”&lt;/h1&gt;
+&lt;p&gt;This is the holy grail. This is what we are trying to achieve by properly designing our working framework. This is what all the aforementioned tips will allow you to achieve. I am sure you have experienced a state of “flow” or “being in the zone” as it is more commonly known among programmers. It is that time period when your mind is totally dedicated, laser focused to a particular task or problem and you essentially lose track of time. You code and code and code and nothing else exists. External stimuli do not even register with your brain and there is only you and your favorite IDE. I would dare to bet that 80% of all progress in our programming work is performed during “flow” incidents. Heck, I got in the zone while writing this article!&lt;/p&gt;
+&lt;p&gt;The bottom line here is that you have to put yourself in a position where you can get in “flow” easily and stay there as long as possible. This is the mode our brains have evolved to work in and this will skyrocket your productivity. I love being in the zone and I am sure you love it too, so why not give ourselves the chance to experience this more?&lt;/p&gt;
+&lt;p&gt;So, there you have it. A few simple tips for getting the most out of your time. Please, try those for a short period (say one or two weeks) and then let me know in the comments how it goes. You can even shoot me an &lt;a href=&quot;mailto:ilias.tsagklis@javacodegeeks.com&quot;&gt;e-mail&lt;/a&gt;, I would be happy to hear from you!&lt;/p&gt;
+&lt;p&gt;And as always, sharing is caring. If you found those tips helpful, share with a colleague, let’s make our work environment a little more optimized.&lt;/p&gt;
+&lt;p&gt;This article was taken from &lt;a href=&quot;http://www.javacodegeeks.com/2013/06/10-productivity-tips-for-software-developers.html&quot; target=&quot;_blank&quot;&gt;JavaCodeGeeks&lt;/a&gt;.&lt;/p&gt;
+&lt;h6 class=&quot;zemanta-related-title&quot; style=&quot;font-size:1em;&quot;&gt;Related articles&lt;/h6&gt;
+&lt;ul class=&quot;zemanta-article-ul&quot;&gt;
+&lt;li class=&quot;zemanta-article-ul-li&quot;&gt;&lt;a href=&quot;http://www.businessinsider.com/how-to-manage-your-time-2013-7&quot; target=&quot;_blank&quot;&gt;6 Tips To Help You Manage Your Time&lt;/a&gt; (businessinsider.com)&lt;/li&gt;
+&lt;li class=&quot;zemanta-article-ul-li&quot;&gt;&lt;a href=&quot;http://www.lifehack.org/articles/lifestyle/72-ideas-simplify-your-life-today.html&quot; target=&quot;_blank&quot;&gt;72 Ideas to Simplify Your Life Today&lt;/a&gt; (lifehack.org)&lt;/li&gt;
+&lt;li class=&quot;zemanta-article-ul-li&quot;&gt;&lt;a href=&quot;http://www.staples.com/sbd/cre/tech-services/explore-tips-and-advice/tech-articles/be-the-boss-managing-your-business-your-employees-and-your-time.html&quot; target=&quot;_blank&quot;&gt;Be the Boss: Managing Your Business, Your Employees and Your Time&lt;/a&gt; (staples.com)&lt;/li&gt;
+&lt;li class=&quot;zemanta-article-ul-li&quot;&gt;&lt;a href=&quot;http://thenextweb.com/lifehacks/2013/07/14/7-tips-to-boost-your-productivity-right-now/&quot; target=&quot;_blank&quot;&gt;7 tips to boost your productivity right now&lt;/a&gt; (thenextweb.com)&lt;/li&gt;
+&lt;li class=&quot;zemanta-article-ul-li&quot;&gt;&lt;a href=&quot;http://laywi4us.wordpress.com/2013/08/02/time-management-for-everyday/&quot; target=&quot;_blank&quot;&gt;Time Management for Everyday&lt;/a&gt; (laywi4us.wordpress.com)&lt;/li&gt;
+&lt;li class=&quot;zemanta-article-ul-li&quot;&gt;&lt;a href=&quot;http://www.lifehack.org/articles/productivity/how-more-productive-anything-and-everything-you.html&quot; target=&quot;_blank&quot;&gt;How to Be More Productive in Anything and Everything You Do&lt;/a&gt; (lifehack.org)&lt;/li&gt;
+&lt;/ul&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Ubuntu Edge: convergence in action</title>
+   <link href="http://jaceromri.github.io/2013/07/26/ubuntu-edge-convergence-in-action"/>
+   <updated>2013-07-26T00:00:00+01:00</updated>
+   <id>http://jaceromri.github.io/2013/07/26/ubuntu-edge-convergence-in-action</id>
+   <content type="html">&lt;p&gt;http://www.youtube.com/watch?feature=player_embedded&amp;amp;v=bk9-v8Sl4yU&lt;/p&gt;
+&lt;p&gt;Victor Palau of Canonical shows how the Ubuntu Edge's convergence will work, using a Nexus 4 as a demo unit. To help make the Ubuntu Edge a reality, visit http://igg.me/at/ubuntuedge&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Introducing the new Ubuntu Edge</title>
+   <link href="http://jaceromri.github.io/2013/07/22/introducing-the-new-ubuntu-edge"/>
+   <updated>2013-07-22T00:00:00+01:00</updated>
+   <id>http://jaceromri.github.io/2013/07/22/introducing-the-new-ubuntu-edge</id>
+   <content type="html">&lt;p&gt;4 days ago Canonical made a teaser on the ubuntu.com website making people wonder what it could be. I have seen many articles on the internet trying to guess what it is, but today Canonical reveals the new Ubuntu Edge. Note that the following is taken from Canonical's speech (not my words)&lt;!--more--&gt;&lt;/p&gt;
+&lt;h1&gt;What is ubuntu Edge?&lt;/h1&gt;
+&lt;p&gt;In the car industry, Formula 1 provides a commercial testbed for cutting-edge technologies. The Ubuntu Edge project aims to do the same for the mobile phone industry -- to provide a low-volume, high-technology platform, crowdfunded by enthusiasts and mobile computing professionals. A pioneering project that accelerates the adoption of new technologies and drives them down into the mainstream.&lt;/p&gt;
+&lt;p&gt;[gallery type=&quot;rectangular&quot; link=&quot;file&quot; columns=&quot;1&quot; ids=&quot;156,157,158,159&quot;]&lt;/p&gt;
+&lt;p&gt;This beautifully crafted smartphone is a proving ground for the most advanced mobile technologies on the horizon, a showpiece for true mobile innovation. And at the heart of it all is convergence: connect to any monitor and this Ubuntu phone transforms into an Ubuntu PC, with a fully integrated &lt;a class=&quot;zem_slink&quot; title=&quot;Operating system&quot; href=&quot;http://en.wikipedia.org/wiki/Operating_system&quot; target=&quot;_blank&quot; rel=&quot;wikipedia&quot;&gt;desktop OS&lt;/a&gt; and shared access to all files.&lt;/p&gt;
+&lt;p&gt;We’re fascinated by converged computing, the idea that the smartphone in your pocket can also be the brain of the PC on your desk. We’ve shaped Ubuntu so you can transition seamlessly between the two environments. Now all that’s needed is a phone that’s designed from the ground up to be a PC as well.&lt;/p&gt;
+&lt;p&gt;The Ubuntu Edge is our very own superphone, a catalyst to drive the next generation of personal computing.&lt;/p&gt;
+&lt;h1&gt;The Hardware&lt;/h1&gt;
+&lt;p&gt;We’ve scoured the research labs of the biggest companies and most exciting startups for the latest and greatest mobile technologies to specify the first-generation Edge.&lt;/p&gt;
+&lt;p&gt;Crafted from cool, textured amorphous metal, the Edge has a distinctive, precise look but its rakishly chamfered edges are shaped to fit naturally in the palm -- our design prototype already has a wonderfully solid feel. It’s the right size, too. Edge gestures are the next big thing in mobile, and our testing has found that a 4.5in screen is ideal for comfortable control of all four edges with one hand.&lt;/p&gt;
+&lt;p style=&quot;text-align:center;&quot;&gt;&lt;a href=&quot;http://jacerdass.files.wordpress.com/2013/07/edge-2-large.jpg&quot;&gt;&lt;img class=&quot;size-large wp-image-157 aligncenter&quot; alt=&quot;edge-2-large&quot; src=&quot;http://jacerdass.files.wordpress.com/2013/07/edge-2-large.jpg?w=700&quot; width=&quot;700&quot; height=&quot;186&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;We also believe the race for ever higher resolution has become a distraction. Beyond 300ppi you’re adding overhead rather than improving display clarity. We think colour, brightness and dynamic range are now the edge of invention so we’ll choose a display for its balance of resolution, dynamic range and colour accuracy.&lt;/p&gt;
+&lt;p&gt;We’ll protect that gorgeous display with something vastly tougher than glass: pure sapphire crystal, a material so hard only diamond could scratch it. For a phone to run a full desktop OS, it must have the raw power of a PC. We’ll choose the fastest available multi-core processor, at least 4GB of RAM and a massive 128GB of storage. The battery will use silicon-anode technology, so we can squeeze more energy into the same dimensions.&lt;/p&gt;
+&lt;p&gt;http://www.youtube.com/watch?v=fFN4k-AFEbw&lt;/p&gt;
+&lt;p&gt;With that kind of muscle, this phone can be your main &lt;a class=&quot;zem_slink&quot; title=&quot;Pcanywhere &quot; href=&quot;http://www.symantec.com/pcanywhere&quot; target=&quot;_blank&quot; rel=&quot;symantec&quot;&gt;PC anywhere&lt;/a&gt; -- and we really do mean anywhere. You can use the desktop wherever you can find a standard HDMI screen, and the dual-LTE chip will get you online with 4G even when you’re travelling abroad. It’s desktop computing gone truly mobile.&lt;/p&gt;
+&lt;h1&gt;The Software&lt;/h1&gt;
+&lt;p&gt;Next-generation hardware deserves innovative software. The Ubuntu Edge will dual-boot both the &lt;a class=&quot;zem_slink&quot; title=&quot;Ubuntu Phone&quot; href=&quot;http://www.ubuntu.com/devices/phone&quot; target=&quot;_blank&quot; rel=&quot;homepage&quot;&gt;Ubuntu phone OS&lt;/a&gt; and Android, and convert into a fully integrated Ubuntu &lt;a class=&quot;zem_slink&quot; title=&quot;Desktop computer&quot; href=&quot;http://en.wikipedia.org/wiki/Desktop_computer&quot; target=&quot;_blank&quot; rel=&quot;wikipedia&quot;&gt;desktop PC&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;&lt;img class=&quot;aligncenter&quot; alt=&quot;&quot; src=&quot;http://assets.ubuntu.com/sites/ubuntu/515/u/img/campaigns/22072013_gogo/ui/ui-3.jpg&quot; width=&quot;580&quot; height=&quot;454&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;First, &lt;a class=&quot;zem_slink&quot; title=&quot;Ubuntu Mobile&quot; href=&quot;http://www.ubuntu.com&quot; target=&quot;_blank&quot; rel=&quot;homepage&quot;&gt;Ubuntu mobile&lt;/a&gt;. We designed the interface to create a beautiful home screen that’s free from the usual clutter. You navigate by swiping over an edge of the screen: open your favourite apps on the left edge, switch instantly between open apps from the right, and use the system and app toolbars at the top and bottom respectively. It’s so simple, Ubuntu doesn’t need a home button at all.&lt;/p&gt;
+&lt;p&gt;Specialist data artists have designed Ubuntu’s welcome screen, with graphics that evolve over time to reflect your use of the phone. We’ve reinvented the inbox so you can read and respond to texts, emails and social media posts in an instant.&lt;/p&gt;
+&lt;p&gt;&lt;img class=&quot;aligncenter&quot; alt=&quot;&quot; src=&quot;http://insights.ubuntu.com/wp-content/uploads/ui-4.jpg&quot; width=&quot;580&quot; height=&quot;360&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;From mobile... to desktop. Yes, it’s the full &lt;a class=&quot;zem_slink&quot; title=&quot;List of Linux distributions&quot; href=&quot;http://en.wikipedia.org/wiki/List_of_Linux_distributions&quot; target=&quot;_blank&quot; rel=&quot;wikipedia&quot;&gt;Ubuntu desktop&lt;/a&gt; OS used by millions on a daily basis -- and it runs directly from the phone, so you’ll be able to move seamlessly from one environment to the other with no file syncing or transfers required. The core OS and applications are fully integrated with their smartphone equivalents, so you can even make and receive calls from the desktop while you work.&lt;/p&gt;
+&lt;p&gt;Finally, you can also boot the phone into Android. And there’s a good reason for that...&lt;/p&gt;
+&lt;h1&gt;The rollout plan&lt;/h1&gt;
+&lt;p&gt;As well as being a bonus for app developers and anyone with a big &lt;a class=&quot;zem_slink&quot; title=&quot;Android&quot; href=&quot;http://code.google.com/android/&quot; target=&quot;_blank&quot; rel=&quot;homepage&quot;&gt;Android app&lt;/a&gt; collection, including Android on the phone means we’re able to offer full convergence at launch. On day one, you’ll be able to launch the Ubuntu desktop from within Android using our existing Ubuntu for Android app. That integration is fully functional today, as you can see from this video.&lt;/p&gt;
+&lt;p&gt;http://www.youtube.com/watch?v=EtNhlVn3ETQ&lt;/p&gt;
+&lt;p&gt;Then shortly after launch we’ll push out a free software update that adds this desktop integration to Ubuntu mobile as well. That’s the real goal we’re working towards. At that point you’ll have a leading-edge smartphone that runs Ubuntu and Android, both of which can also run a fully integrated Ubuntu desktop OS. What other phone can match that?&lt;/p&gt;
+&lt;p&gt;However you choose to use Ubuntu Edge, the incredible components will keep it running fast and fresh as our software evolves. We’ll push out monthly &lt;a class=&quot;zem_slink&quot; title=&quot;Ubuntu (operating system)&quot; href=&quot;http://www.ubuntu.com&quot; target=&quot;_blank&quot; rel=&quot;homepage&quot;&gt;Ubuntu software&lt;/a&gt; updates to add features and polish, and we guarantee to keep supporting the phone for three years.&lt;/p&gt;
+&lt;h1&gt;For the developers&lt;/h1&gt;
+&lt;p&gt;&lt;img class=&quot;aligncenter&quot; alt=&quot;&quot; src=&quot;http://assets.ubuntu.com/sites/ubuntu/515/u/img/campaigns/22072013_gogo/graphics/developers-01.png&quot; width=&quot;580&quot; height=&quot;140&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;HTML5 apps written for other platforms can be brought over to Ubuntu with ease, and any web property can quickly be adapted to run as a web app, with its own icon and access to system services. For richer applications, use our &lt;a class=&quot;zem_slink&quot; title=&quot;QML&quot; href=&quot;http://doc.qt.nokia.com/4.7/qtquick.html&quot; target=&quot;_blank&quot; rel=&quot;homepage&quot;&gt;QML&lt;/a&gt; toolkit for amazingly productive high-performance engineering.&lt;/p&gt;
+&lt;p&gt;But best of all, using the Ubuntu SDK you can write and upload a single native application that has desktop, tablet and phone interfaces. It’s a developer’s dream.&lt;/p&gt;
+&lt;h1&gt;Technical specifications&lt;/h1&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a class=&quot;zem_slink&quot; title=&quot;Multi boot&quot; href=&quot;http://en.wikipedia.org/wiki/Multi_boot&quot; target=&quot;_blank&quot; rel=&quot;wikipedia&quot;&gt;Dual boot&lt;/a&gt; Ubuntu mobile OS and Android&lt;/li&gt;
+&lt;li&gt;Fully integrated Ubuntu desktop PC when docked&lt;/li&gt;
+&lt;li&gt;Fastest multi-core CPU, 4GB RAM, 128GB storage&lt;/li&gt;
+&lt;li&gt;4.5in 1,280 x 720 HD sapphire crystal display&lt;/li&gt;
+&lt;li&gt;8mp low-light rear camera, 2mp front camera&lt;/li&gt;
+&lt;li&gt;Dual-LTE, dual-band 802.11n Wi-Fi, Bluetooth 4, NFC&lt;/li&gt;
+&lt;li&gt;GPS, accelerometer, gyro, proximity sensor, compass, barometer&lt;/li&gt;
+&lt;li&gt;Stereo speakers with HD audio, dual-mic recording, Active Noise Cancellation&lt;/li&gt;
+&lt;li&gt;MHL connector, 3.5mm jack&lt;/li&gt;
+&lt;li&gt;Silicon-anode Li-Ion battery&lt;/li&gt;
+&lt;li&gt;64 x 9 x 124mm&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Specifications are subject to change.&lt;/p&gt;
+&lt;p&gt;&lt;img class=&quot;aligncenter&quot; alt=&quot;&quot; src=&quot;http://assets.ubuntu.com/sites/ubuntu/515/u/img/campaigns/22072013_gogo/concepts/concepts-1.jpg&quot; width=&quot;580&quot; height=&quot;320&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;To read more about the project, the risks and challenges, please refer to the &lt;a href=&quot;http://www.indiegogo.com/projects/ubuntu-edge&quot; target=&quot;_blank&quot;&gt;indiegogo page&lt;/a&gt;.&lt;/p&gt;
+&lt;h6 class=&quot;zemanta-related-title&quot; style=&quot;font-size:1em;&quot;&gt;Related articles&lt;/h6&gt;
+&lt;ul class=&quot;zemanta-article-ul&quot;&gt;
+&lt;li class=&quot;zemanta-article-ul-li&quot;&gt;&lt;a href=&quot;http://www.omgubuntu.co.uk/2013/07/countdown-appears-on-ubuntu-website&quot; target=&quot;_blank&quot;&gt;4 Day Countdown Appears on Ubuntu Website&lt;/a&gt; (omgubuntu.co.uk)&lt;/li&gt;
+&lt;/ul&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Create a speaking Linux shell script with Google</title>
+   <link href="http://jaceromri.github.io/2013/07/21/create-a-speaking-linux-shell-script-with-google"/>
+   <updated>2013-07-21T00:00:00+01:00</updated>
+   <id>http://jaceromri.github.io/2013/07/21/create-a-speaking-linux-shell-script-with-google</id>
+   <content type="html">&lt;p&gt;After &lt;a title=&quot;Using Google Translate in PHP&quot; href=&quot;http://jacerdass.wordpress.com/2013/07/19/using-google-translate-in-php/&quot; target=&quot;_blank&quot;&gt;using google to translate text&lt;/a&gt; and&lt;a title=&quot;Hacking Google Voice API in Linux&quot; href=&quot;http://jacerdass.wordpress.com/2013/07/16/hacking-google-voice-api-in-linux/&quot; target=&quot;_blank&quot;&gt; decode audio into text&lt;/a&gt;, now we are about to make a small &lt;a class=&quot;zem_slink&quot; title=&quot;Speech synthesis&quot; href=&quot;http://en.wikipedia.org/wiki/Speech_synthesis&quot; target=&quot;_blank&quot; rel=&quot;wikipedia&quot;&gt;text to speech engine&lt;/a&gt; that uses google too. This is easy and pretty useful. Besides, it supports all languages (it is google, right?)&lt;!--more--&gt;&lt;/p&gt;
+&lt;p&gt;Let's agree that the script we are about to create should accept 2 arguments: text to transform (required) and input language (optional). If the language is not specified, it would use english as the default value. You should know that the text is going to be transported into a get request to google servers, so we should think to &lt;a class=&quot;zem_slink&quot; title=&quot;Percent-encoding&quot; href=&quot;http://en.wikipedia.org/wiki/Percent-encoding&quot; target=&quot;_blank&quot; rel=&quot;wikipedia&quot;&gt;url-encode&lt;/a&gt; it, and here is how&lt;/p&gt;
+&lt;pre&gt;rawurlencode() {
+   local string=&quot;${1}&quot;
+   local strlen=${#string}
+   local encoded=&quot;&quot;
+
+   for (( pos=0 ; pos&amp;lt;strlen ; pos++ )); do
+      c=${string:$pos:1}
+      case &quot;$c&quot; in
+         [-_.~a-zA-Z0-9] ) o=&quot;${c}&quot; ;;
+         * ) printf -v o '%%%02x' &quot;'$c&quot;
+      esac
+     encoded+=&quot;${o}&quot;
+   done
+   echo &quot;${encoded}&quot;
+}&lt;/pre&gt;
+&lt;p&gt;This function doesn't rely on any external tools and it does the job very well!  Next thing is to check the inputs, i mean language and text&lt;/p&gt;
+&lt;pre&gt;if [ -z &quot;$1&quot; ]
+ then
+   echo &quot;No text specified, exiting&quot;
+   exit
+ else
+   TEXT=$( rawurlencode &quot;$1&quot; )
+fiif [ -z &quot;$2&quot; ]
+ then
+   echo &quot;No language supplied, using en&quot;
+   LANG=&quot;en&quot;
+ else
+   LANG=&quot;$2&quot;
+fi&lt;/pre&gt;
+&lt;p&gt;We set the script to expect a first parameter and store it in &lt;em&gt;TEXT&lt;/em&gt; variable after url-encoding it. If text in not specified, the script would exit. Then it checks if a language is specified and store it in &lt;em&gt;LANG&lt;/em&gt; variable, otherwise &lt;em&gt;LANG&lt;/em&gt; would equal &lt;strong&gt;en&lt;/strong&gt;. Now let's see how is interacting with google TTS engine is possible. After a minute with the google translator web page, i realised that was not hard to get at all. The api url looks like this&lt;/p&gt;
+&lt;pre&gt;API=&quot;http://translate.google.com/translate_tts?ie=UTF-8&amp;amp;tl=$LANG&amp;amp;q=$TEXT&quot;&lt;/pre&gt;
+&lt;p&gt;As you can see, this new &lt;em&gt;API&lt;/em&gt; variable holds the url to be used later. This url returns an MP3 file, so we should save it temporally, best way to choose a name for it is to use MD5 hash&lt;/p&gt;
+&lt;pre&gt;hash=&quot;$(echo -n &quot;$TEXT&quot; | md5sum )&quot;&lt;/pre&gt;
+&lt;p&gt;Before proceeding, i should tell you that the above url is protected against wget, it only accepts requests from browser, but when was this a problem? Let's define the &lt;a class=&quot;zem_slink&quot; title=&quot;User agent&quot; href=&quot;http://en.wikipedia.org/wiki/User_agent&quot; target=&quot;_blank&quot; rel=&quot;wikipedia&quot;&gt;UserAgent&lt;/a&gt; string to use&lt;/p&gt;
+&lt;pre&gt;UA=&quot;Mozilla/5.0 (Windows NT 6.2; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/29.0.1547.2 Safari/537.36&quot;&lt;/pre&gt;
+&lt;p&gt;This is the latest &lt;a class=&quot;zem_slink&quot; title=&quot;Google Chrome&quot; href=&quot;http://www.google.com/chrome&quot; target=&quot;_blank&quot; rel=&quot;homepage&quot;&gt;Google Chrome&lt;/a&gt; version in the time i'm writing this. It is even not stable yet lol. Time to make the long waited request!&lt;/p&gt;
+&lt;pre&gt;wget -o /dev/null --user-agent=&quot;$UA&quot; -O &quot;/tmp/$hash.mp3&quot; &quot;$API&quot;&lt;/pre&gt;
+&lt;p&gt;Now we tell wget to grab the audio file and store it &lt;strong&gt;/tmp&lt;/strong&gt; folder with the &lt;em&gt;hash&lt;/em&gt; name we have already created. The request will go as if it was issued through a browser thanks to the &lt;strong&gt;--user-agent&lt;/strong&gt; option. Now we need a tool that would play a sound file in &lt;a class=&quot;zem_slink&quot; title=&quot;Command-line interface&quot; href=&quot;http://en.wikipedia.org/wiki/Command-line_interface&quot; target=&quot;_blank&quot; rel=&quot;wikipedia&quot;&gt;cli mode&lt;/a&gt;, i have chosen a lightweight one called &lt;strong&gt;&lt;a class=&quot;zem_slink&quot; title=&quot;Mpg123&quot; href=&quot;http://mpg123.org&quot; target=&quot;_blank&quot; rel=&quot;homepage&quot;&gt;mpg123&lt;/a&gt;&lt;/strong&gt;, go ahead and install it if you didn't&lt;/p&gt;
+&lt;pre&gt;sudo apt-get install mpg123&lt;/pre&gt;
+&lt;p&gt;Let's get back to the talking script, we know exactly where we have left the audio file, time to give &lt;strong&gt;mpg123&lt;/strong&gt; a try&lt;/p&gt;
+&lt;pre&gt;mpg123 -q &quot;/tmp/$hash.mp3&quot;&lt;/pre&gt;
+&lt;p&gt;Hurray! this is the part of  the script that plays the sound, this is exciting! one last thing to do is to remove the temporary audio file&lt;/p&gt;
+&lt;pre&gt;rm &quot;/tmp/$hash.mp3&quot;&lt;/pre&gt;
+&lt;p&gt;Now the script is ready to use! check &lt;a href=&quot;https://gist.github.com/JokerHacker/6047812&quot; target=&quot;_blank&quot;&gt;my gist here&lt;/a&gt; to find a full script file, download it and test it, you may probably want to hear things like&lt;/p&gt;
+&lt;pre&gt;./googleTTS.sh &quot;damn i'm a geek&quot;
+./googleTTS.sh &quot;j'aime google!&quot; fr&lt;/pre&gt;
+&lt;p&gt;don't forget to make the script file executable before running it&lt;/p&gt;
+&lt;pre&gt;chmod +x googleTTS.sh&lt;/pre&gt;
+&lt;p&gt;This would be really powerful if combined with the previous &lt;a title=&quot;Hacking Google Voice API in Linux&quot; href=&quot;http://jacerdass.wordpress.com/2013/07/16/hacking-google-voice-api-in-linux/&quot;&gt;voice to text decoder&lt;/a&gt; You can make much more improvements on this one, maybe a caching system is an obvious need. I should leave you playing around with it, you can use a spell checker (i would explain how if you want) with it or you can put it everywhere on your system and feel like Tony Stark lol&lt;br /&gt;
+Leave a comment in the box below to tell us how was your experience with this, maybe you want to subscribe or follow me on social medias too.&lt;/p&gt;
+&lt;p&gt;&lt;img class=&quot;aligncenter&quot; alt=&quot;&quot; src=&quot;http://blogs.adobe.com/aftereffects/files/2013/01/Iron_Man_HUD_MarkVII_Leviathan_Analysis_full_624_351.png&quot; width=&quot;624&quot; height=&quot;351&quot; /&gt;&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Enjoy the new Wine 1.6</title>
+   <link href="http://jaceromri.github.io/2013/07/20/enjoy-the-new-wine-1-6"/>
+   <updated>2013-07-20T00:00:00+01:00</updated>
+   <id>http://jaceromri.github.io/2013/07/20/enjoy-the-new-wine-1-6</id>
+   <content type="html">&lt;p&gt;The Wine development team have made version 1.6 available after 16 months of hard work. There are about 10,000 different changes. Highlights include the new Mac driver, complete support for window transparency and a new package for mono. NET support.&lt;!--more--&gt;&lt;br /&gt;
+Let's start with the practical part: installing WIne 1.6. There is a PPA and is thus completely free of pain and with the usual triple jump:&lt;/p&gt;
+&lt;pre&gt;sudo apt-add-repository ppa:ubuntu-wine/ppa
+sudo apt-get update
+sudo apt-get install wine1.6&lt;/pre&gt;
+&lt;p&gt;Personally it i had Wine 1.6-rc5 installed, but this version should not have much (if any) differ from the final one.&lt;/p&gt;
+&lt;p&gt;Those who prefer to install it via source code, you can find it at &lt;a href=&quot;http://prdownloads.sourceforge.net/wine/wine-1.6.tar.bz2&quot;&gt;sourceforge.net&lt;/a&gt; or &lt;a href=&quot;http://mirrors.ibiblio.org/wine/source/1.6/wine-1.6.tar.bz2&quot;&gt;ibiblio.org&lt;/a&gt; . You can find installation instructions for many distributions (Ubuntu, Fedora, openSUSE, &lt;a class=&quot;zem_slink&quot; title=&quot;NYSE: RHT&quot; href=&quot;http://quicken.intuit.com/investing/stock-quotes/RHT/Red-Hat-Inc&quot; target=&quot;_blank&quot; rel=&quot;quicken&quot;&gt;Red Hat&lt;/a&gt;, Debian, Slackware, FreeBSD, PC-BSD) in the &lt;a href=&quot;http://www.winehq.org/download&quot;&gt;download section of the project page&lt;/a&gt;, obtaining the code from git is also possible: &lt;a href=&quot;http://www.winehq.org/git&quot;&gt;www.winehq.org/git&lt;/a&gt;.&lt;/p&gt;
+&lt;h1&gt;What's new in Wine 1.6&lt;/h1&gt;
+&lt;p&gt;The list is very long and there is a detailed changelog in the &lt;a href=&quot;http://www.winehq.org/announce/1.6&quot; target=&quot;_blank&quot;&gt;official announcement&lt;/a&gt;. I have highlighted some here:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Window transparency support, including both color keying and alpha blending transparency;&lt;/li&gt;
+&lt;li&gt;All window rendering is now done on the client-side using the DIB engine (except for &lt;a class=&quot;zem_slink&quot; title=&quot;OpenGL&quot; href=&quot;http://www.opengl.org/&quot; target=&quot;_blank&quot; rel=&quot;homepage&quot;&gt;OpenGL&lt;/a&gt; rendering). This means that rendering to windows or bitmaps gives identical results;&lt;/li&gt;
+&lt;li&gt;X11 server-side font rendering is no longer supported. All fonts are rendered client-side using &lt;a class=&quot;zem_slink&quot; title=&quot;FreeType&quot; href=&quot;http://freetype.org/&quot; target=&quot;_blank&quot; rel=&quot;homepage&quot;&gt;FreeType&lt;/a&gt;;&lt;/li&gt;
+&lt;li&gt;There are significant performance improvements in the DIB engine, particularly for text rendering, bitmap stretching, alpha blending, and gradients;&lt;/li&gt;
+&lt;li&gt;Sub-pixel font anti-aliasing is now supported in the DIB engine, using the system anti-aliasing configuration from &lt;a class=&quot;zem_slink&quot; title=&quot;Fontconfig&quot; href=&quot;http://fontconfig.org/&quot; target=&quot;_blank&quot; rel=&quot;homepage&quot;&gt;FontConfig&lt;/a&gt;;&lt;/li&gt;
+&lt;li&gt;Raw input support for keyboard and mouse;&lt;/li&gt;
+&lt;li&gt;There is a joystick applet in the control panel, to allow configuring joysticks and testing their behavior;&lt;/li&gt;
+&lt;li&gt;Support for Randr 1.2 and 1.3;&lt;/li&gt;
+&lt;li&gt;&lt;a class=&quot;zem_slink&quot; title=&quot;DOSBox&quot; href=&quot;http://www.dosbox.com&quot; target=&quot;_blank&quot; rel=&quot;homepage&quot;&gt;DOSBox&lt;/a&gt; is tried first when running a &lt;a class=&quot;zem_slink&quot; title=&quot;DOS&quot; href=&quot;http://en.wikipedia.org/wiki/DOS&quot; target=&quot;_blank&quot; rel=&quot;wikipedia&quot;&gt;DOS application&lt;/a&gt;. The Wine DOS support is only used as a fallback when DOSBox cannot be found, and will be removed in a future release;&lt;/li&gt;
+&lt;li&gt;Wine can now be configured to report the Windows version as 'Windows 8';&lt;/li&gt;
+&lt;li&gt;The Mono runtime is packaged as an MSI file, and its installation can be managed from the &quot;Add/Remove Programs&quot; control panel. It is automatically installed on Wine prefix updates;&lt;/li&gt;
+&lt;li&gt;The Microsoft .NET 4.0 runtime can be installed for cases where Mono is not good enough yet;&lt;/li&gt;
+&lt;li&gt;HTTPS connections use &lt;a class=&quot;zem_slink&quot; title=&quot;GnuTLS&quot; href=&quot;http://www.gnutls.org/&quot; target=&quot;_blank&quot; rel=&quot;homepage&quot;&gt;GnuTLS&lt;/a&gt; (or Secure Transport on &lt;a class=&quot;zem_slink&quot; title=&quot;OS X&quot; href=&quot;http://www.apple.com/osx&quot; target=&quot;_blank&quot; rel=&quot;homepage&quot;&gt;Mac OS X&lt;/a&gt;). &lt;a class=&quot;zem_slink&quot; title=&quot;OpenSSL&quot; href=&quot;http://www.openssl.org/&quot; target=&quot;_blank&quot; rel=&quot;homepage&quot;&gt;OpenSSL&lt;/a&gt; is no longer used;&lt;/li&gt;
+&lt;li&gt;The Direct3D 9Ex implementation is more complete;&lt;/li&gt;
+&lt;li&gt;Improvements to various parts of the D3DX9 and Direct3D 10 implementations;&lt;/li&gt;
+&lt;li&gt;Audio device enumeration has been improved, and multi-channel devices are better supported;&lt;/li&gt;
+&lt;li&gt;VMR-9 video rendering has been implemented;&lt;/li&gt;
+&lt;li&gt;On Linux, dynamic device management supports the UDisks2 service;&lt;/li&gt;
+&lt;li&gt;Building Wine for the ARM64 platform is now supported;&lt;/li&gt;
+&lt;li&gt;Preliminary support for building Wine for Android using the &lt;a class=&quot;zem_slink&quot; title=&quot;Android software development&quot; href=&quot;http://en.wikipedia.org/wiki/Android_software_development&quot; target=&quot;_blank&quot; rel=&quot;wikipedia&quot;&gt;Android NDK&lt;/a&gt;;&lt;/li&gt;
+&lt;li&gt;A native Mac OS X driver has been implemented, for better integration with the Mac desktop environment. The full range of driver features are supported, including OpenGL, window management, clipboard, drag &amp;amp; drop, system tray, etc.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Post your experience with Wince 1.6 in the comment box below.&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Using Google Translate in PHP</title>
+   <link href="http://jaceromri.github.io/2013/07/19/using-google-translate-in-php"/>
+   <updated>2013-07-19T00:00:00+01:00</updated>
+   <id>http://jaceromri.github.io/2013/07/19/using-google-translate-in-php</id>
+   <content type="html">&lt;p&gt;After Hacking &lt;a title=&quot;Hacking Google Voice API in Linux&quot; href=&quot;http://jacerdass.wordpress.com/2013/07/16/hacking-google-voice-api-in-linux/&quot;&gt;Google Voice API&lt;/a&gt;, We are about to hack &lt;a class=&quot;zem_slink&quot; title=&quot;Google Translate&quot; href=&quot;http://translate.google.com&quot; target=&quot;_blank&quot; rel=&quot;homepage&quot;&gt;Google Translate&lt;/a&gt; this time! We are going to write a full featured yet basic class in php to help us use Google Translate. The best part is that it is going to be lightweight and dependency-free.&lt;!--more--&gt;&lt;/p&gt;
+&lt;p&gt;Let's start by defining properties for our &lt;em&gt;GoogleTranslate&lt;/em&gt; class, let's think of it this way: we need a variable to hold the original language, another one to hold the language which we are translating to, a result holder and an extra one to hold the api url format, used in the &lt;strong&gt;&lt;a class=&quot;zem_slink&quot; title=&quot;Curl (mathematics)&quot; href=&quot;http://en.wikipedia.org/wiki/Curl_%28mathematics%29&quot; target=&quot;_blank&quot; rel=&quot;wikipedia&quot;&gt;curl&lt;/a&gt; &lt;/strong&gt;request later.&lt;/p&gt;
+&lt;pre&gt;&amp;lt;!--?php
+class GoogleTranslate {
+   public $lastResult = &quot;&quot;;
+   private $langFrom;
+   private $langTo;
+   private static $urlFormat = &quot;http://translate.google.com/translate_a/t?client=t&amp;amp;text=%s&amp;amp;hl=en&amp;amp;sl=%s&amp;amp;tl=%s&amp;amp;ie=UTF-8&amp;amp;oe=UTF-8&amp;amp;multires=1&amp;amp;otf=1&amp;amp;pc=1&amp;amp;trs=1&amp;amp;ssel=3&amp;amp;tsel=6&amp;amp;sc=1&quot;;&lt;/pre&gt;
+&lt;p&gt;The &lt;em&gt;$LangFrom&lt;/em&gt; and &lt;em&gt;$LangTo&lt;/em&gt; variable need setters, this is how we are going to do it&lt;/p&gt;
+&lt;pre&gt;public function setLangFrom($lang) {
+   $this-&amp;gt;langFrom = $lang;
+   return $this;
+}
+public function setLangTo($lang) {
+   $this-&amp;gt;langTo = $lang;
+   return $this;
+}&lt;/pre&gt;
+&lt;p&gt;You may wonder why would I write &lt;em&gt;return $this&lt;/em&gt;, which means that these two function will return a reference to the object after affecting the properties. This technique is called &lt;a class=&quot;zem_slink&quot; title=&quot;Method chaining&quot; href=&quot;http://en.wikipedia.org/wiki/Method_chaining&quot; target=&quot;_blank&quot; rel=&quot;wikipedia&quot;&gt;method chaining&lt;/a&gt; which enables us to make multiple calls for different methods in the same line. A good example would be helpful, let's see the class constructor&lt;/p&gt;
+&lt;pre&gt;public function __construct($from = &quot;en&quot;, $to = &quot;fr&quot;) {
+   $this-&amp;gt;setLangFrom($from)-&amp;gt;setLangTo($to);
+}&lt;/pre&gt;
+&lt;p&gt;This should be enough to setup parameters for the request. But we need a method that would actually trigger the connection. Things would be easier if we chose to use curl&lt;/p&gt;
+&lt;pre&gt;public static final function makeCurl($url, array $params = array(), $cookieSet = false) {
+   if (!$cookieSet) {
+       $cookie = tempnam(&quot;/tmp&quot;, &quot;CURLCOOKIE&quot;);
+      $curl = curl_init($url);
+      curl_setopt($curl, CURLOPT_COOKIEJAR, $cookie);
+      curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+      curl_exec($curl);
+   }   $queryString = http_build_query($params);
+   $curl = curl_init($url . &quot;?&quot; . $queryString);
+   curl_setopt($curl, CURLOPT_COOKIEFILE, $cookie);
+   curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+   $output = curl_exec($curl);   return $output;
+ }&lt;/pre&gt;
+&lt;p&gt;The process is divided in two steps: a first call is done to retrieve cookies information (if given), then a second call to request real data using the previous cookies. If you are too impatient, you have probably tried the script at this stage, if you did, you would notice that it works! it only needs some filtering that is what the next method does&lt;/p&gt;
+&lt;pre&gt;public function translate($string) {
+   $url = sprintf(self::$urlFormat, rawurlencode($string), $this-&amp;gt;langFrom, $this-&amp;gt;langTo);
+   $result = preg_replace('!,+!', ',', self::makeCurl($url)); // remove repeated commas (causing JSON syntax error)
+   $resultArray = json_decode($result, true);
+   return $this-&amp;gt;lastResult = $resultArray[0][0][0];
+ }&lt;/pre&gt;
+&lt;p&gt;This method patches the placeholders in the &lt;em&gt;$urlFormat&lt;/em&gt;, makes the request, cleans out the received data, decode it and extracts the main result from it. This is quite simple to figure out on your own, you just need to play with the real Google Translate page to know what to do. Now the class is ready and fully functional. Go ahead and create a new file in the same directory as the first one, write the following&lt;/p&gt;
+&lt;pre&gt;&amp;lt;?php
+include &quot;GoogleTranslate.class.php&quot;;
+$t = new GoogleTranslate('en', 'ar');
+echo $t-&amp;gt;translate(&quot;Hello World!&quot;);
+?&amp;gt;&lt;/pre&gt;
+&lt;p&gt;this would return&lt;/p&gt;
+&lt;p style=&quot;direction:rtl;text-align:center;&quot;&gt;مرحبا العالم !&lt;/p&gt;
+&lt;p style=&quot;direction:ltr;text-align:left;&quot;&gt;isn't this great! This was pretty easy and short. Go ahead and take a look at &lt;a href=&quot;https://gist.github.com/JokerHacker/6037665&quot; target=&quot;_blank&quot;&gt;my gist&lt;/a&gt;, you will get the complete class assembled, with an extra method that i have included which can be called statically, having all the data as parameters, I will let you discover it on your own. If you find this tutorial useful, follow me here and on social networks to get updated for new tutorials.&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>What do you want to read about?</title>
+   <link href="http://jaceromri.github.io/2013/07/18/what-do-you-want-to-read-about"/>
+   <updated>2013-07-18T00:00:00+01:00</updated>
+   <id>http://jaceromri.github.io/2013/07/18/what-do-you-want-to-read-about</id>
+   <content type="html">&lt;p&gt;Help me by telling what do you want to read about on my blog, your opinion matters!&lt;/p&gt;
+&lt;p&gt;[polldaddy poll=7260393]&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Building a simple API using node.js</title>
+   <link href="http://jaceromri.github.io/2013/07/18/building-a-simple-api-using-node-js"/>
+   <updated>2013-07-18T00:00:00+01:00</updated>
+   <id>http://jaceromri.github.io/2013/07/18/building-a-simple-api-using-node-js</id>
+   <content type="html">&lt;p&gt;I have already introduced node.js in &lt;a href=&quot;http://jacerdass.wordpress.com/2013/07/14/introduction-to-node-js/&quot;&gt;a previous article&lt;/a&gt; and explained how to install it in &lt;a href=&quot;http://jacerdass.wordpress.com/2013/07/15/node-js-first-steps/&quot;&gt;another one&lt;/a&gt;. Now it is time to go further with it. Basically what we will try to do today is to create a basic yet functional API &lt;a class=&quot;zem_slink&quot; title=&quot;Server (computing)&quot; href=&quot;http://en.wikipedia.org/wiki/Server_%28computing%29&quot; target=&quot;_blank&quot; rel=&quot;wikipedia&quot;&gt;server&lt;/a&gt; using node.js along with &lt;strong&gt;restify&lt;/strong&gt; and &lt;a class=&quot;zem_slink&quot; title=&quot;Mongoose&quot; href=&quot;http://en.wikipedia.org/wiki/Mongoose&quot; target=&quot;_blank&quot; rel=&quot;wikipedia&quot;&gt;mongoose&lt;/a&gt;, which are two modules.&lt;!--more--&gt;&lt;/p&gt;
+&lt;p&gt;First thing is, we have to understand what a module is. That is quite simple, a module is a packaged code that delivers a functionality using reachable (exported) functions. &lt;strong&gt;Restify&lt;/strong&gt;, for instance, helps creating &lt;a class=&quot;zem_slink&quot; title=&quot;Representational state transfer&quot; href=&quot;http://en.wikipedia.org/wiki/Representational_state_transfer&quot; target=&quot;_blank&quot; rel=&quot;wikipedia&quot;&gt;RESTful&lt;/a&gt; &lt;a class=&quot;zem_slink&quot; title=&quot;Application programming interface&quot; href=&quot;http://en.wikipedia.org/wiki/Application_programming_interface&quot; target=&quot;_blank&quot; rel=&quot;wikipedia&quot;&gt;APIs&lt;/a&gt; easily, while &lt;strong&gt;mongoose&lt;/strong&gt; is a &lt;a class=&quot;zem_slink&quot; title=&quot;MongoDB&quot; href=&quot;http://www.mongodb.org/&quot; target=&quot;_blank&quot; rel=&quot;homepage&quot;&gt;MongoDB&lt;/a&gt; driver. Node.js provides a handful tool to deal with modules, like installing and removing, it is &lt;strong&gt;npm. &lt;/strong&gt;so go ahead and install those two modules, type in terminal:&lt;/p&gt;
+&lt;pre&gt;npm install restify mongoose&lt;/pre&gt;
+&lt;p&gt;Yes, it is that easy! Now we have &lt;strong&gt;restify&lt;/strong&gt; and &lt;strong&gt;mongoose&lt;/strong&gt; installed, let's start coding. Create a new directory and step into it, create an app.js file and write the following&lt;/p&gt;
+&lt;pre&gt;var restify = require('restify')
+ , mongoose = require('mongoose');&lt;/pre&gt;
+&lt;p&gt;these two lines actually load the modules, thanks to the &lt;strong&gt;require()&lt;/strong&gt; function, and assign them to two different variables. Next step is to create a server&lt;/p&gt;
+&lt;pre&gt;var server = restify.createServer({ name: 'mongo-api' })
+ server.listen(7000, function () {
+ console.log('%s listening at %s', server.name, server.url)
+})&lt;/pre&gt;
+&lt;p&gt;Go ahead and try it, type&lt;/p&gt;
+&lt;pre&gt;node app.js&lt;/pre&gt;
+&lt;p&gt;you will see something like&lt;/p&gt;
+&lt;pre&gt;mongo-api listening at http://0.0.0.0:7000&lt;/pre&gt;
+&lt;p&gt;This indicates that our server is up and running, good isn't it? But it is quite useless since we have not defined any routine yet. Before, we have to connect to &lt;strong&gt;MongoDB&lt;/strong&gt; and define our model. For example we can make a user model having 3 properties:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Email&lt;/li&gt;
+&lt;li&gt;First Name&lt;/li&gt;
+&lt;li&gt;Last Name&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Pretty simple and easy&lt;/p&gt;
+&lt;pre&gt;db = mongoose.connect(&quot;mongodb://localhost/example-api&quot;);
+var Schema = mongoose.Schema,
+ ObjectId = Schema.ObjectID;
+var User = new Schema({
+ email: {
+  type: String,
+  required: true,
+  trim: true
+ },
+ fname: {
+  type: String,
+  required: false,
+  trim: true
+ },
+ lname: {
+  type: String,
+  required: false,
+  trim: true
+ },
+});
+var User = mongoose.model('User', User);&lt;/pre&gt;
+&lt;p&gt;This should be enough to connect to the database and define our User model. There is an extra tweak to the server to enable the default headers for the system using &lt;strong&gt;fullResponse()&lt;/strong&gt; and &lt;strong&gt;bodyParser()&lt;/strong&gt; to remap the body content of a request to the req.params variable, allowing both &lt;strong&gt;GET&lt;/strong&gt; and &lt;strong&gt;POST&lt;/strong&gt;/&lt;strong&gt;PUT&lt;/strong&gt; routes to use the same interface, fairly handy when you want to re-use code. Go ahead and apply them&lt;/p&gt;
+&lt;pre&gt;server
+ .use(restify.fullResponse())
+ .use(restify.bodyParser())&lt;/pre&gt;
+&lt;p&gt;We have now the server setup and ready, along with its database part. But we still need routines to define the behaviour of the API. Our first routine, is to grab all the records in the database when the user emits a &lt;strong&gt;GET&lt;/strong&gt; request to &lt;strong&gt;/user&lt;/strong&gt;&lt;/p&gt;
+&lt;pre&gt;server.get('/user', function (req, res, next) {
+ User.find({}, function (error, users) {
+ res.send(users)
+ })
+})&lt;/pre&gt;
+&lt;p&gt;To test this, we need to run the application and use curl to interact with it&lt;/p&gt;
+&lt;pre&gt;curl -i http://localhost:7000/user&lt;/pre&gt;
+&lt;p&gt;Since our database is still empty, this request should return something like [] indicating that nothing is found there. The next required routine is the post, where a request is able to add a record&lt;/p&gt;
+&lt;pre&gt;server.post('/user', function (req, res, next) {
+ if (req.params.email === undefined) {
+  return next(new restify.InvalidArgumentError('Email must be supplied'))
+ }
+ var userData = {
+  email: req.params.email,
+  fname: req.params.fname,
+  lname: req.params.lname
+ }
+ var user = new User(userData);
+ user.save(function (error, data) {
+  if (error) {
+   return next(new restify.InvalidArgumentError(JSON.stringify(error.errors)))
+  }
+  else {
+   res.json(data);
+  }
+  res.send(201, user)
+ })
+})&lt;/pre&gt;
+&lt;p&gt;It is a bit more complicated than the first routine but it is not that hard. It just accepts the &lt;strong&gt;POST&lt;/strong&gt; request map it into an object and save it into the database. We are doing a very basic verification step where we check for the email is already set in the request body. Let's test this!&lt;/p&gt;
+&lt;pre&gt;curl -i -X POST -d '{ &quot;email&quot;: &quot;mail@jacer.info&quot;, &quot;fname&quot;: &quot;Jacer&quot;, &quot;lname&quot;: &quot;Omri&quot; } ' http://localhost:7000/user&lt;/pre&gt;
+&lt;p&gt;after successfully processing the request, the server would return this&lt;/p&gt;
+&lt;pre&gt;{
+ __v: 0
+ email: &quot;jokerhacker.jacer@gmail.com&quot;
+ fname: &quot;Jacer&quot;
+ lname: &quot;Omri&quot;
+ _id: &quot;51e7bf1d84d3941816000001&quot;
+}&lt;/pre&gt;
+&lt;p&gt;This means that the record has been added to the database, notice the &lt;strong&gt;_id&lt;/strong&gt; key which is auto generated within &lt;strong&gt;MongoDB&lt;/strong&gt;. Let's make another &lt;strong&gt;GET&lt;/strong&gt; routine that only requests one record.&lt;/p&gt;
+&lt;pre&gt;server.get('/user/:id', function (req, res, next) {
+ User.findOne({ _id: req.params.id }, function (error, user) {
+  if (error) return next(new restify.InvalidArgumentError(JSON.stringify(error.errors)))
+  if (user) {
+   res.send(user)
+  } else {
+   res.send(404)
+  }
+ })
+})&lt;/pre&gt;
+&lt;p&gt;This is quite similar to the first &lt;strong&gt;GET&lt;/strong&gt; routine with one addition, it is the path &lt;strong&gt;/user/:id&lt;/strong&gt;, which tells the application to wait for a value after &lt;strong&gt;/user/&lt;/strong&gt; and map it to &lt;strong&gt;req.params.id&lt;/strong&gt;. In this case, it is the id of the record to retrieve . Let's see how it works&lt;/p&gt;
+&lt;pre&gt;curl -i http://localhost:7000/user/51e7bf1d84d3941816000001&lt;/pre&gt;
+&lt;p&gt;would return&lt;/p&gt;
+&lt;pre&gt;{
+ __v: 0
+ email: &quot;jokerhacker.jacer@gmail.com&quot;
+ fname: &quot;Jacer&quot;
+ lname: &quot;Omri&quot;
+ _id: &quot;51e7bf1d84d3941816000001&quot;
+}&lt;/pre&gt;
+&lt;p&gt;What is about updating an existing record?&lt;/p&gt;
+&lt;pre&gt;server.put('/user/:id', function (req, res, next) {
+ if (req.params.email === undefined) {
+  return next(new restify.InvalidArgumentError('Email must be supplied'))
+ }
+ var userData = {
+  email: req.params.email,
+  fname: req.params.fname,
+  lname: req.params.lname
+ }
+ User.update({ _id: req.params.id }, userData, {
+  multi: false
+ }, function (error, user) {
+  if (error) return next(new restify.InvalidArgumentError(JSON.stringify(error.errors)))
+  res.send()
+ })
+})&lt;/pre&gt;
+&lt;p&gt;As you can see, this is the &lt;strong&gt;PUT&lt;/strong&gt; routine which is similar to &lt;strong&gt;POST&lt;/strong&gt; but it does not add a new record anyway, notice the &lt;strong&gt;update()&lt;/strong&gt; function.  Let's say i want to change my e-mail address&lt;/p&gt;
+&lt;pre&gt;curl -i -X PUT -d '{ &quot;email&quot;: &quot;jokerhacker.jacer@gmail.com&quot;, &quot;fname&quot;: &quot;Jacer&quot;, &quot;lname&quot;: &quot;Omri&quot; } ' http://localhost:7000/user/51e7bf1d84d3941816000001&lt;/pre&gt;
+&lt;p&gt;This way we tell the system to update the record having &lt;strong&gt;_id&lt;/strong&gt; equals &lt;strong&gt;51e7bf1d84d3941816000001&lt;/strong&gt; with the data provided in the request body, which will update the previous user with the new e-mail  address. Now the &lt;strong&gt;DELETE&lt;/strong&gt; routine&lt;/p&gt;
+&lt;pre&gt;server.del('/user/:id', function (req, res, next) {
+ User.remove({ _id: req.params.id }, function (error, user) {
+ if (error) return next(new restify.InvalidArgumentError(JSON.stringify(error.errors)))
+res.send()
+ })
+})&lt;/pre&gt;
+&lt;p&gt;This is relatively simple, it requires an id to be given in the request path so it would be deleted. Let's try it&lt;/p&gt;
+&lt;pre&gt;curl -i -X DELETE http://localhost:7000/user/51e7bf1d84d3941816000001&lt;/pre&gt;
+&lt;p&gt;To make sure the record is successfully deleted, just request the first &lt;strong&gt;GET&lt;/strong&gt; request and you will not find this id.&lt;/p&gt;
+&lt;p&gt;This is it! We've already done building a basic API using Node.js and a minimum number of modules. You can go further with this, like creating security policies like login/pass or api keys. You can find a copy of the whole app.js file assembled &lt;a href=&quot;https://gist.github.com/JokerHacker/6030118&quot; target=&quot;_blank&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;If you find this tutorial and others on this blog useful, follow me here and on social networks to keep in touch and read my coming articles.&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Web scraping done right using PHP</title>
+   <link href="http://jaceromri.github.io/2013/07/17/web-scrapping-done-right-using-php"/>
+   <updated>2013-07-17T00:00:00+01:00</updated>
+   <id>http://jaceromri.github.io/2013/07/17/web-scrapping-done-right-using-php</id>
+   <content type="html">&lt;p&gt;The art of gathering information is now made easy these days thanks to web services and &lt;a class=&quot;zem_slink&quot; title=&quot;Application programming interface&quot; href=&quot;http://en.wikipedia.org/wiki/Application_programming_interface&quot; target=&quot;_blank&quot; rel=&quot;wikipedia&quot;&gt;APIs&lt;/a&gt;. But they don't cover everything, and that is why scrapping is a must. It is not easy to do it, given that there are many ways to do it and that &lt;a class=&quot;zem_slink&quot; title=&quot;Web page&quot; href=&quot;http://en.wikipedia.org/wiki/Web_page&quot; target=&quot;_blank&quot; rel=&quot;wikipedia&quot;&gt;web pages&lt;/a&gt; are not the same. Today i am going to show you the right way to scrap and extract any information from any website.&lt;!--more--&gt;&lt;/p&gt;
+&lt;p&gt;First thing to do in order to write a website scraper is to analyse a number of web pages seeking for a pattern. I do this using &lt;a class=&quot;zem_slink&quot; title=&quot;Chrome&quot; href=&quot;http://web-browsers.findthebest.com/l/3/Chrome&quot; target=&quot;_blank&quot; rel=&quot;fdbsoftware&quot;&gt;Google Chrome&lt;/a&gt;'s developer tools. Then I write a piece of code that follows this pattern and extract the data. It may seem simple, but it is not. I have tried many ways like using parsing the web page as a Dom document and traverse it using &lt;a class=&quot;zem_slink&quot; title=&quot;XPath&quot; href=&quot;http://en.wikipedia.org/wiki/XPath&quot; target=&quot;_blank&quot; rel=&quot;wikipedia&quot;&gt;XPath&lt;/a&gt; etc.  But i couldn't do much with it, it is just not that efficient. So i moved on to use &lt;a class=&quot;zem_slink&quot; title=&quot;Regular expression&quot; href=&quot;http://en.wikipedia.org/wiki/Regular_expression&quot; target=&quot;_blank&quot; rel=&quot;wikipedia&quot;&gt;Regex&lt;/a&gt;, it gave me quite more options and broader limits, but it is not structure aware, I mean it hard to handle it when things become too complicated. The best way i have found so far is &lt;a class=&quot;zem_slink&quot; title=&quot;JQuery&quot; href=&quot;http://jquery.com&quot; target=&quot;_blank&quot; rel=&quot;homepage&quot;&gt;jQuery&lt;/a&gt;-like &lt;a class=&quot;zem_slink&quot; title=&quot;Cascading Style Sheets&quot; href=&quot;http://en.wikipedia.org/wiki/Cascading_Style_Sheets&quot; target=&quot;_blank&quot; rel=&quot;wikipedia&quot;&gt;CSS&lt;/a&gt; selectors!  Yes I am talking about &lt;a class=&quot;zem_slink&quot; title=&quot;PHP&quot; href=&quot;http://en.wikipedia.org/wiki/PHP&quot; target=&quot;_blank&quot; rel=&quot;wikipedia&quot;&gt;PHP&lt;/a&gt;. I  was seeking for new options when i found the &lt;a href=&quot;http://pqlite.com/&quot; target=&quot;_blank&quot;&gt;PQLite project&lt;/a&gt;. I want talk any longer, instead, I will move to the coding part!&lt;/p&gt;
+&lt;p&gt;Let's say we want to get the poster image of any given movie, having its imdb id. So we open this page and analyse it&lt;/p&gt;
+&lt;pre&gt;&lt;a href=&quot;http://www.imdb.com/title/tt1821694/&quot;&gt;http://www.imdb.com/title/tt1821694/&lt;/a&gt;&lt;/pre&gt;
+&lt;p&gt;Then we inspect the poster image, right click on the poster and choose &quot;inspect element&quot;&lt;/p&gt;
+&lt;p style=&quot;text-align:center;&quot;&gt;&lt;a href=&quot;http://jacerdass.files.wordpress.com/2013/07/inspector.png&quot;&gt;&lt;img class=&quot;size-large wp-image-104 aligncenter&quot; alt=&quot;inspector&quot; src=&quot;http://jacerdass.files.wordpress.com/2013/07/inspector.png?w=700&quot; width=&quot;700&quot; height=&quot;469&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;the selected tag is our poster image. Let's analyse the hierarchy in which our element is found: a div with &quot;image&quot; class, a td with &quot;img_primary&quot; id and another div with &quot;title-overview-widget&quot; id. This should be enough to clearly and uniquely identify the poster image. If you are already familiar with jQuery, you should know that class names are prepended by a dot, while id names are prepended with a hashtag. Lets open the &lt;a class=&quot;zem_slink&quot; title=&quot;JavaScript&quot; href=&quot;http://en.wikipedia.org/wiki/JavaScript&quot; target=&quot;_blank&quot; rel=&quot;wikipedia&quot;&gt;javascript console&lt;/a&gt; in the browser and write the following:&lt;/p&gt;
+&lt;pre&gt;$(&quot;#title-overview-widget #img_primary .image img&quot;)&lt;/pre&gt;
+&lt;p&gt;Hurray!  This line of code did give us the right element that holds our poster image. Now we are sure that we have the right jQuery selector. Let's move to the PHP part,  Go ahead and &lt;a href=&quot;http://pqlite.com/&quot; target=&quot;_blank&quot;&gt;PQLite Project&lt;/a&gt; and  create a new php file within your (local) server and type the following:&lt;/p&gt;
+&lt;pre&gt;&amp;lt;!--?php
+$imdb_id = &quot;tt1821694&quot;;
+$imdb_url = 'http://www.imdb.com/title/'. $imdb_id . '/';
+include &quot;PQLite.php&quot;;
+$pq = new PQLite(file_get_contents($imdb_url));
+echo $pq-&amp;gt;find(&quot;#title-overview-widget #img_primary .image img&quot;)
+?&amp;gt;&lt;/pre&gt;
+&lt;p&gt;This code echoes out the element that holds the poster image. it gives&lt;/p&gt;
+&lt;pre&gt;TagArray Object [you may find methods associated with it at http://pqlite.com/docs/]&lt;/pre&gt;
+&lt;p&gt;Something is wrong, right? this is because we tried to echo out a &lt;a class=&quot;zem_slink&quot; title=&quot;HTML element&quot; href=&quot;http://en.wikipedia.org/wiki/HTML_element&quot; target=&quot;_blank&quot; rel=&quot;wikipedia&quot;&gt;list of html tags&lt;/a&gt;, at least that is how PQLite treats it. We are sure that we will get a unique element. Besides, we want to have only the src attribute. So we change the last line of code with the following&lt;/p&gt;
+&lt;pre&gt;echo $pq-&amp;gt;find(&quot;#title-overview-widget #img_primary .image img&quot;)-&amp;gt;get(0)-&amp;gt;getAttr(&quot;src&quot;);&lt;/pre&gt;
+&lt;p&gt;That should echo out a url like this&lt;/p&gt;
+&lt;pre&gt;http://ia.media-imdb.com/images/M/MV5BMjI2ODQ4ODY3Nl5BMl5BanBnXkFtZTcwNTc2NzE1OQ@@._V1_SX214_.jpg&lt;/pre&gt;
+&lt;p&gt;Yeah we have do it right and easy! Go ahead and change the imdb_id to any other movie id and watch how these few lines can work on any imdb page. Of course you can go further with this and make a lot of more useful examples. You may share your work with us. Follow me for more various tricks and tutorials!&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Hacking Google Voice API in Linux</title>
+   <link href="http://jaceromri.github.io/2013/07/16/hacking-google-voice-api-in-linux"/>
+   <updated>2013-07-16T00:00:00+01:00</updated>
+   <id>http://jaceromri.github.io/2013/07/16/hacking-google-voice-api-in-linux</id>
+   <content type="html">&lt;p&gt;You should have seen voice-aware input zones coming with the new google chrome release about a month ago. Yeah it's a cool way to input text easily without typing for long seconds, with the opportunity to get search results for &quot;laughable clothes&quot; when you say &quot;fashionable clothes&quot;. Seriously i cannot see how this is useful, especially when it comes to &lt;a class=&quot;zem_slink&quot; title=&quot;Desktop computer&quot; href=&quot;http://en.wikipedia.org/wiki/Desktop_computer&quot; target=&quot;_blank&quot; rel=&quot;wikipedia&quot;&gt;desktop PCs&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;But there's a good guy on the internet who happily made good use of it. He made a &lt;a class=&quot;zem_slink&quot; title=&quot;Shell script&quot; href=&quot;http://en.wikipedia.org/wiki/Shell_script&quot; target=&quot;_blank&quot; rel=&quot;wikipedia&quot;&gt;shell script&lt;/a&gt; that listens to your voice and use &lt;a class=&quot;zem_slink&quot; title=&quot;Google Voice&quot; href=&quot;http://www.google.com/googlevoice/about.html&quot; target=&quot;_blank&quot; rel=&quot;homepage&quot;&gt;Google Voice&lt;/a&gt; &lt;a class=&quot;zem_slink&quot; title=&quot;Application programming interface&quot; href=&quot;http://en.wikipedia.org/wiki/Application_programming_interface&quot; target=&quot;_blank&quot; rel=&quot;wikipedia&quot;&gt;API&lt;/a&gt; to decode it and convert it to text. I will be explaining this hack he made so you all can make good use of it.&lt;!--more--&gt;&lt;/p&gt;
+&lt;p&gt;First thing is we need a url for the API, do we define the API variable&lt;/p&gt;
+&lt;pre&gt;API=&quot;http://www.google.com/speech-api/v1/recognize?lang=en&quot;&lt;/pre&gt;
+&lt;p&gt;Note that at the end of  it there is this lang parameter, we can make our script more efficient if it would be able to handle multiple languages, let's put it in a variable, or maybe get it passed as an argument :)&lt;/p&gt;
+&lt;pre&gt;if [ -z &quot;$1&quot; ]
+  then
+    echo &quot;No language supplied, using en\n&quot;
+    LANG=&quot;en&quot;
+  else
+    echo &quot;using $1 as language\n&quot;
+    LANG=&quot;$1&quot;
+fi
+API=&quot;http://www.google.com/speech-api/v1/recognize?lang=$LANG&quot;&lt;/pre&gt;
+&lt;p&gt;Now we need to send to this url a sound file containing our voice. But it's not that simple of course, we need:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;arecord&lt;/strong&gt; to record our voice over the mic&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;&lt;a class=&quot;zem_slink&quot; title=&quot;FLAC&quot; href=&quot;http://flac.sourceforge.net/&quot; target=&quot;_blank&quot; rel=&quot;homepage&quot;&gt;flac&lt;/a&gt;&lt;/strong&gt; to convert the &lt;a class=&quot;zem_slink&quot; title=&quot;File format&quot; href=&quot;http://en.wikipedia.org/wiki/File_format&quot; target=&quot;_blank&quot; rel=&quot;wikipedia&quot;&gt;file format&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;wget&lt;/strong&gt; to interact with the api&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Make sure these 3 packages are installed, if not, you can always use your package manager like &lt;strong&gt;apt-get&lt;/strong&gt; to install it. The reason we're converting the file into flac format is that is required by the API itself. Now let's mix things together!&lt;/p&gt;
+&lt;pre&gt;JSON=`arecord -f cd -t wav -d 3 -r 16000 | flac - -f --best --sample-rate 16000 -o out.flac;\
+wget -O - -o /dev/null --post-file out.flac --header=&quot;Content-Type: audio/x-flac; rate=16000&quot; &quot;$API&quot;`&lt;/pre&gt;
+&lt;p&gt;As you can see, we did good so far and the script will receive the response in JSON format, so we need to parse it using &lt;a href=&quot;http://jacerdass.wordpress.com/2013/07/13/sed-command-tips-and-tricks/&quot;&gt;sed&lt;/a&gt; and awk. I already wrote an article about &lt;a href=&quot;http://jacerdass.wordpress.com/2013/07/13/sed-command-tips-and-tricks/&quot;&gt;sed&lt;/a&gt; here, you want to check it out. This may look freaky but it does the job&lt;/p&gt;
+&lt;pre&gt;UTTERANCE=`echo $JSON\
+ |sed -e 's/[{}]/''/g'\
+  |awk -v k=&quot;text&quot; '{n=split($0,a,&quot;,&quot;); for (i=1; i&amp;lt;=n; i++) print a[i]; exit }'\
+   |awk -F: 'NR==3 { print $3; exit }'\
+    |sed -e 's/[&quot;]/''/g'`
+echo &quot;utterance: $UTTERANCE&quot;&lt;/pre&gt;
+&lt;p&gt;Yeah now we had our script to echo the text! That seems pretty geeky, but how can this be useful? Controlling our PC maybe? why not! To do that we must define string to which the script compares the final text, if it matches one of the strings, it executes the corresponding command.&lt;/p&gt;
+&lt;pre&gt;CMD_LIST_DIRECTORY=&quot;list directory&quot;
+CMD_WHOAMI=&quot;who am i&quot;
+if [ `echo &quot;$UTTERANCE&quot; | grep -ic &quot;^$CMD_LIST_DIRECTORY$&quot;` -gt 0 ]; then
+     ls .
+elif [ `echo &quot;$UTTERANCE&quot; | grep -ic &quot;^$CMD_WHOAMI$&quot;` -gt 0 ]; then
+     whoami
+fi&lt;/pre&gt;
+&lt;p&gt;We can define countless numbers of commands, i will be working on using arrays for this (maybe one of you can do it for us :) ). You can find a complete script &lt;a href=&quot;https://gist.github.com/JokerHacker/6003852&quot; target=&quot;_blank&quot;&gt;here&lt;/a&gt; if you are too lazy to save a new file :p&lt;/p&gt;
+&lt;p&gt;Guess what, we just made good use of Google Voice API! I will leave you to test it, improve it and why not share it. Your comments are welcome.&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Node.js: First Steps</title>
+   <link href="http://jaceromri.github.io/2013/07/15/node-js-first-steps"/>
+   <updated>2013-07-15T00:00:00+01:00</updated>
+   <id>http://jaceromri.github.io/2013/07/15/node-js-first-steps</id>
+   <content type="html">&lt;p&gt;Yesterday, i have been So yesterday I talked about &lt;a href=&quot;http://jacerdass.wordpress.com/2013/07/14/introduction-to-node-js/&quot;&gt;my experience with node.js&lt;/a&gt; in which I was impressed with it's usefulness and went through its history and what node.js brings to the table. A node.js expert, &lt;a href=&quot;https://plus.google.com/115497443161931361398&quot; target=&quot;_blank&quot;&gt;Mr. Rafik NACCACHE&lt;/a&gt; highlighted a  couple of features that I did not  mention&lt;br /&gt;
+like how node.js is best used in apps with &lt;a class=&quot;zem_slink&quot; title=&quot;WebSocket&quot; href=&quot;http://en.wikipedia.org/wiki/WebSocket&quot; target=&quot;_blank&quot; rel=&quot;wikipedia&quot;&gt;WebSocket&lt;/a&gt;, like real time networking as seen in games, chat, push notification &lt;a class=&quot;zem_slink&quot; title=&quot;Server (computing)&quot; href=&quot;http://en.wikipedia.org/wiki/Server_%28computing%29&quot; target=&quot;_blank&quot; rel=&quot;wikipedia&quot;&gt;servers&lt;/a&gt;, etc... It should be noted though that node.js isn't the optimal option in certain situations like &quot;classical server rendered web&quot;.&lt;/p&gt;
+&lt;p&gt;Enough talking and let's start the action! in this article I will explain how to install node.js along with its &lt;a class=&quot;zem_slink&quot; title=&quot;Package management system&quot; href=&quot;http://en.wikipedia.org/wiki/Package_management_system&quot; target=&quot;_blank&quot; rel=&quot;wikipedia&quot;&gt;package manager&lt;/a&gt; on an ubuntu machine and have some test coding.&lt;/p&gt;
+&lt;p&gt;&lt;!--more--&gt;&lt;/p&gt;
+&lt;h1&gt;Installing&lt;/h1&gt;
+&lt;p&gt;There's an easy way to do it, using the ubuntu package manager of course. We have to add the appropriate &lt;a class=&quot;zem_slink&quot; title=&quot;Personal Package Archive&quot; href=&quot;http://en.wikipedia.org/wiki/Personal_Package_Archive&quot; target=&quot;_blank&quot; rel=&quot;wikipedia&quot;&gt;PPA&lt;/a&gt; to be able to locate the package&lt;/p&gt;
+&lt;pre&gt;sudo &lt;a class=&quot;zem_slink&quot; title=&quot;Advanced Packaging Tool&quot; href=&quot;http://wiki.debian.org/Apt&quot; target=&quot;_blank&quot; rel=&quot;homepage&quot;&gt;apt-get&lt;/a&gt; install python-software-properties
+sudo add-apt-repository ppa:chris-lea/node.js
+sudo apt-get update
+sudo apt-get install &lt;a class=&quot;zem_slink&quot; title=&quot;Node.js&quot; href=&quot;http://nodejs.org/&quot; target=&quot;_blank&quot; rel=&quot;homepage&quot;&gt;nodejs&lt;/a&gt;&lt;/pre&gt;
+&lt;p&gt;If something went wrong or you are too geeky to do it that way, then you probably want to install it from source, and here is how:&lt;/p&gt;
+&lt;pre&gt;echo 'export PATH=$HOME/local/bin:$PATH' &amp;gt;&amp;gt; ~/.bashrc
+. ~/.bashrc
+mkdir ~/local
+mkdir ~/node-latest-install
+cd ~/node-latest-install
+curl http://nodejs.org/dist/node-latest.tar.gz | tar xz --strip-components=1
+./configure --prefix=~/local
+make install # ok, fine, this step probably takes more than 30 seconds...
+curl https://npmjs.org/install.sh | sh&lt;/pre&gt;
+&lt;p&gt;this is the best way so far to do it, written by Isaac Z. Schlueter. More details can be found &lt;a href=&quot;https://github.com/joyent/node/wiki/Installing-Node.js-via-package-manager&quot; target=&quot;_blank&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;&lt;!--more--&gt;&lt;/p&gt;
+&lt;h1&gt;Your first script&lt;/h1&gt;
+&lt;p&gt;As i mentioned before, node.js' way to do thing is really super simple and easy, eliminating all the common repetitive coding required to accomplish tasks. Let's make a Hello World web server. First thing we need is a way to initiate a server. Don't worry, that is what modules are for, minimizing the amount of code you have to write. We can use the &quot;http&quot; module which can provide us with a server interface.&lt;/p&gt;
+&lt;pre&gt;var http = require('http');&lt;/pre&gt;
+&lt;p&gt;Now the variable http holds our http server module. What we are going to do next is as follows&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;create a server&lt;/li&gt;
+&lt;li&gt;set its behaviour to give 200 head and echos &quot;Hello World&quot;&lt;/li&gt;
+&lt;li&gt;make it listen on a port&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;and here is how&lt;/p&gt;
+&lt;pre&gt;var http = require('http');
+var server = http.createServer(function (req, res) {
+res.writeHead(200, {'Content-Type': 'text/plain'});
+res.end('Hello World\n');
+}).listen(8100, &quot;127.0.0.1&quot;);
+console.log('Server running at http://127.0.0.1:8100/');&lt;/pre&gt;
+&lt;p&gt;Pretty easy, right? now let's run it. Save the above code in a file wherever on your hard disk, open terminal, navigate to its folder and type the following:&lt;/p&gt;
+&lt;pre&gt;node script_file_name.js&lt;/pre&gt;
+&lt;p&gt;Open your web browser, type http://127.0.0.1:8100 and hurray! it says Hello World!&lt;/p&gt;
+&lt;h1&gt;Conclusion&lt;/h1&gt;
+&lt;p&gt;Again, node.js is really straightforward and can do big things with just a few simple lines of code. Probably you're saying &quot;hey what about the package manager? we didn't use it&quot;, well that is because we didn't do anything complicated yet. In my next article about node.js, i will show you how to install and use more modules and make a slightly more sophisticated program. Until then, follow me on this blog or on social medias and help us by submitting your comments below.&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Introduction to node.js</title>
+   <link href="http://jaceromri.github.io/2013/07/14/introduction-to-node-js"/>
+   <updated>2013-07-14T00:00:00+01:00</updated>
+   <id>http://jaceromri.github.io/2013/07/14/introduction-to-node-js</id>
+   <content type="html">&lt;p&gt;I guess everybody in the field heard about node.js already, but likely most of them have ignored it, just like i did, questioning its future without getting into its details. Well, i do know now that i have made a mistake by doing so. Lately, i have gone through node.js documentations and list of addons, and i have to say it: it's incredibly awesome! And here is why.&lt;!--more--&gt; Basically, what node.js has to offer is a hole new horizon for what network applications are. Its creator, &lt;a class=&quot;zem_slink&quot; title=&quot;Node.js&quot; href=&quot;http://en.wikipedia.org/wiki/Node.js&quot; target=&quot;_blank&quot; rel=&quot;wikipedia&quot;&gt;Ryan Dahl&lt;/a&gt;, needed a to create web sites with push capabilities as seen in web applications like &lt;a class=&quot;zem_slink&quot; title=&quot;Gmail&quot; href=&quot;http://gmail.com&quot; target=&quot;_blank&quot; rel=&quot;homepage&quot;&gt;Gmail&lt;/a&gt;. after several trials, he has chosen &lt;a class=&quot;zem_slink&quot; title=&quot;JavaScript&quot; href=&quot;http://en.wikipedia.org/wiki/JavaScript&quot; target=&quot;_blank&quot; rel=&quot;wikipedia&quot;&gt;JavaScript&lt;/a&gt; because it didn't have an IO api, so he could have the freedom in defining one as he wishes.&lt;/p&gt;
+&lt;p&gt;[caption id=&quot;&quot; align=&quot;alignright&quot; width=&quot;635&quot;]&lt;img alt=&quot;Ryan Dahl&quot; src=&quot;http://berb.github.io/nodejs-talk-chaosseminar/assets/images/ryah.jpg&quot; width=&quot;635&quot; height=&quot;654&quot; /&gt; Ryan Dahl[/caption]&lt;/p&gt;
+&lt;p&gt;He started developing it with some main points in mind:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;event driven mechanism&lt;/li&gt;
+&lt;li&gt;&lt;a class=&quot;zem_slink&quot; title=&quot;Asynchronous I/O&quot; href=&quot;http://en.wikipedia.org/wiki/Asynchronous_I/O&quot; target=&quot;_blank&quot; rel=&quot;wikipedia&quot;&gt;non blocking IO&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a class=&quot;zem_slink&quot; title=&quot;Scalability&quot; href=&quot;http://en.wikipedia.org/wiki/Scalability&quot; target=&quot;_blank&quot; rel=&quot;wikipedia&quot;&gt;Scalability&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;performance and speed&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;JavaScript would obviously seem to be the best option to create an event driven technology. the fact that node.js is event driven, and that it has a non blocking IO is pretty connected, the event mechanism is used to make callbacks everywhere, so a basic file read instruction for instance, can be non blocking by setting what to do with the data grabbed from the file as a &lt;a class=&quot;zem_slink&quot; title=&quot;Callback (computer programming)&quot; href=&quot;http://en.wikipedia.org/wiki/Callback_%28computer_programming%29&quot; target=&quot;_blank&quot; rel=&quot;wikipedia&quot;&gt;callback function&lt;/a&gt;, so that while the system is reading the file, it can continue executing the script and serve the data when it comes. Take thin example:&lt;/p&gt;
+&lt;pre&gt;var fs = require('fs');
+var contents = fs.readFileSync('users','utf8');
+console.log(contents);
+console.log(&quot;Hello Node\n&quot;);
+var contents = fs.readFileSync('hosts','utf8');
+console.log(contents);
+console.log(&quot;Hello again!&quot;);&lt;/pre&gt;
+&lt;p&gt;this code is blocking, means every instruction is executed only if its predecessor  is fully executed. This approach is what believed to be non network friendly, the node.js way to do it is:&lt;/p&gt;
+&lt;pre&gt;var fs = require('fs');
+var contents = fs.readFile('./users','utf8', function(err,contents){
+     console.log(contents);
+});
+console.log(&quot;Hello Node\n&quot;);
+var contents = fs.readFile('./hosts','utf8', function(err,contents){
+     console.log(contents);
+});
+console.log(&quot;Hello again!&quot;);&lt;/pre&gt;
+&lt;p&gt;You have to know that, when you try this code, you will get an unexpected result, the 2 instructions that do not depend on the &lt;a class=&quot;zem_slink&quot; title=&quot;File system&quot; href=&quot;http://en.wikipedia.org/wiki/File_system&quot; target=&quot;_blank&quot; rel=&quot;wikipedia&quot;&gt;file system&lt;/a&gt; read call are executed in the first place,&lt;/p&gt;
+&lt;pre&gt;Hello Node
+Hello again!
+list of users...
+list of hosts...&lt;/pre&gt;
+&lt;p&gt;this weird order comes from that the list of users and the list of hosts have to be read first, so that would take time, so we printed them in the callback of the read function, in other words, read the file, once done echo it, but meanwhile, do something else.&lt;/p&gt;
+&lt;p&gt;Best part of node.js is that it doesn't rely on an external software to do the web server part, it's the web server, the website and everything in the same time! that allows to build fast, scalable and flexible web applications with minimum overhead.&lt;/p&gt;
+&lt;p&gt;But what about performance? node.js is built on top of &lt;a class=&quot;zem_slink&quot; title=&quot;Google&quot; href=&quot;http://google.com&quot; target=&quot;_blank&quot; rel=&quot;homepage&quot;&gt;Google's&lt;/a&gt; &lt;a class=&quot;zem_slink&quot; title=&quot;V8 (JavaScript engine)&quot; href=&quot;http://code.google.com/p/v8&quot; target=&quot;_blank&quot; rel=&quot;homepage&quot;&gt;V8 JavaScript engine&lt;/a&gt;, the libuv platform abstraction layer, which are written in C++ and C, the world fastest programming languages. That would have huge effect on the time and resources needed in order for node.js to interpret the code. I don't think there would be a better solution.&lt;/p&gt;
+&lt;h2&gt;Conclusion&lt;/h2&gt;
+&lt;p&gt;node.js is really useful and it has a great future. It's easy to learn and everyone should at least know about it. I'll be posting tutorials and open source projects I have written using node.js, so follow me and stay tuned! Meanwhile take a look at &lt;a href=&quot;http://nodejs.org/&quot; target=&quot;_blank&quot;&gt;node.js website&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;&amp;nbsp;&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Sed command: tips and tricks</title>
+   <link href="http://jaceromri.github.io/2013/07/13/sed-command-tips-and-tricks"/>
+   <updated>2013-07-13T00:00:00+01:00</updated>
+   <id>http://jaceromri.github.io/2013/07/13/sed-command-tips-and-tricks</id>
+   <content type="html">&lt;p&gt;I decided a year ago to learn about sed and &lt;a class=&quot;zem_slink&quot; title=&quot;AWK&quot; href=&quot;http://cm.bell-labs.com/cm/cs/awkbook&quot; target=&quot;_blank&quot; rel=&quot;homepage&quot;&gt;awk&lt;/a&gt;: two powerful &lt;a class=&quot;zem_slink&quot; title=&quot;Command-line interface&quot; href=&quot;http://en.wikipedia.org/wiki/Command-line_interface&quot; target=&quot;_blank&quot; rel=&quot;wikipedia&quot;&gt;command line&lt;/a&gt; based text processors. You can do really awesome tricks using them. Especially when you're writing a &lt;a class=&quot;zem_slink&quot; title=&quot;Shell script&quot; href=&quot;http://en.wikipedia.org/wiki/Shell_script&quot; target=&quot;_blank&quot; rel=&quot;wikipedia&quot;&gt;shell script&lt;/a&gt;, including sed and/or awk may add bits of awesomeness to your script. You can for instance filter white spaces, parse strings in a defined way, etc..&lt;/p&gt;
+&lt;p&gt;But today, i'm going to show you what i have learned so far! it sounds creepy, but it's not that hard to learn. Let's Stream EDit!&lt;!--more--&gt;&lt;/p&gt;
+&lt;h2&gt;Substitution&lt;/h2&gt;
+&lt;p&gt;&lt;em&gt;Substitute &quot;foo&quot; with &quot;bar&quot; on each line&lt;/em&gt;&lt;br /&gt;
+Only the 1st occurrence&lt;/p&gt;
+&lt;pre&gt;sed 's / foo / bar /'&lt;/pre&gt;
+&lt;p&gt;For the 3rd case only&lt;/p&gt;
+&lt;pre&gt;sed 's/foo/bar/3'&lt;/pre&gt;
+&lt;p&gt;All occurrences&lt;/p&gt;
+&lt;pre&gt;sed 's / foo / bar / g'&lt;/pre&gt;
+&lt;p&gt;Just before the last occurrence&lt;/p&gt;
+&lt;pre&gt;sed 's / \ (.* \) foo \ (.* foo \) / \ 1bar \ 2 /'&lt;/pre&gt;
+&lt;p&gt;Only the last case&lt;/p&gt;
+&lt;pre&gt;sed 's / \ (.* \) foo / \ 1bar /'&lt;/pre&gt;
+&lt;p&gt;Substitute &quot;foo&quot; with &quot;bar&quot; only lines containing &quot;plop&quot;&lt;/p&gt;
+&lt;pre&gt;sed '/ plop / s / foo / bar / g'&lt;/pre&gt;
+&lt;p&gt;Substitute &quot;foo&quot; with &quot;bar&quot; except the lines containing &quot;plop&quot;&lt;/p&gt;
+&lt;pre&gt;sed '/ plop /! s / foo / bar / g '&lt;/pre&gt;
+&lt;p&gt;Replace &quot;Foo&quot; or &quot;foo&quot; with &quot;bar&quot; on each line&lt;/p&gt;
+&lt;pre&gt;sed 's / [Ff] oo / bar / g'&lt;/pre&gt;
+&lt;p&gt;Replace &quot;blue&quot; or &quot;white&quot; or &quot;red&quot; with &quot;green&quot;&lt;/p&gt;
+&lt;pre&gt;sed 's / blue \ | blank \ | red / green / g'&lt;/pre&gt;
+&lt;h2&gt;Display&lt;/h2&gt;
+&lt;p&gt;The 1st line (head -1)&lt;/p&gt;
+&lt;pre&gt;sed q&lt;/pre&gt;
+&lt;p&gt;The first 5 lines (head -5)&lt;/p&gt;
+&lt;pre&gt;sed '5 q '
+sed '1, 5! d '&lt;/pre&gt;
+&lt;p&gt;The last line (tail -1)&lt;/p&gt;
+&lt;pre&gt;sed -n '$ p'
+sed '$! d &quot;&lt;/pre&gt;
+&lt;p&gt;The last 5 lines (tail -5)&lt;/p&gt;
+&lt;pre&gt;sed -e: a-e '$ q, N, 6, $ D; ba'&lt;/pre&gt;
+&lt;p&gt;The 2 last lines (tail -2)&lt;/p&gt;
+&lt;pre&gt;sed '$! N; $! D'&lt;/pre&gt;
+&lt;p&gt;Only lines match a a reason or a &lt;a class=&quot;zem_slink&quot; title=&quot;Regular expression&quot; href=&quot;http://en.wikipedia.org/wiki/Regular_expression&quot; target=&quot;_blank&quot; rel=&quot;wikipedia&quot;&gt;regular expression&lt;/a&gt;&lt;/p&gt;
+&lt;pre&gt;sed -n '/ pattern / p'
+sed '/ regexp /! d'&lt;/pre&gt;
+&lt;p&gt;Only lines that match a not a reason or a regular expression&lt;/p&gt;
+&lt;pre&gt;sed -n '/ pattern /! p'
+sed '/ regexp / d'&lt;/pre&gt;
+&lt;p&gt;The line preceding a pattern or a regular expression&lt;/p&gt;
+&lt;pre&gt;sed -n '/ pattern / (g; 1! p;) h'&lt;/pre&gt;
+&lt;p&gt;The line following a pattern or a regular expression&lt;/p&gt;
+&lt;pre&gt;sed -n '/ regexp / (n, p;)'&lt;/pre&gt;
+&lt;h2&gt;Remove&lt;/h2&gt;
+&lt;p&gt;&lt;em&gt;Removing spaces and tabs&lt;/em&gt;&lt;br /&gt;
+At the beginning of the line&lt;/p&gt;
+&lt;pre&gt;sed 's / ^ [\ t] * / / 
+sed 's / ^ \ s * / /' # Using the parameter &quot;\ s&quot;&lt;/pre&gt;
+&lt;p&gt;At &lt;a class=&quot;zem_slink&quot; title=&quot;Newline&quot; href=&quot;http://en.wikipedia.org/wiki/Newline&quot; target=&quot;_blank&quot; rel=&quot;wikipedia&quot;&gt;end of line&lt;/a&gt;&lt;/p&gt;
+&lt;pre&gt;sed 's / [\ t ]*$//'&lt;/pre&gt;
+&lt;p&gt;At the beginning and end of line&lt;/p&gt;
+&lt;pre&gt;sed 's / ^ [\ t ]*//; s / [\ t ]*$//'&lt;/pre&gt;
+&lt;p&gt;&lt;em&gt;Removing blank lines &lt;/em&gt;&lt;br /&gt;
+All empty lines&lt;/p&gt;
+&lt;pre&gt;sed '/^$/ of 
+sed '/./! of&lt;/pre&gt;
+&lt;p&gt;Only those at the top&lt;/p&gt;
+&lt;pre&gt;sed '/./,$! of 
+sed -nr'/./,$ /(.*)/ s \ 1 / p '&lt;/pre&gt;
+&lt;p&gt;Only those at end&lt;/p&gt;
+&lt;pre&gt;sed -e: a-e '/ ^ \ n * $ / ($ d N; ba'-e ')'&lt;/pre&gt;
+&lt;p&gt;&lt;em&gt;Eliminate a line at regular intervals&lt;/em&gt;&lt;br /&gt;
+All lines pairs&lt;/p&gt;
+&lt;pre&gt;sed '1 ~ 2d '&lt;/pre&gt;
+&lt;p&gt;All the odd lines&lt;/p&gt;
+&lt;pre&gt;sed '2 ~ 2d '&lt;/pre&gt;
+&lt;p&gt;Every n lines from the line n&lt;/p&gt;
+&lt;pre&gt;sed '3 ~ 2d '# 2 All lines from line 3&lt;/pre&gt;
+&lt;h2&gt;Miscellaneous&lt;/h2&gt;
+&lt;p&gt;&lt;em&gt;Join lines &lt;/em&gt;&lt;br /&gt;
+Attach lines 2 by 2&lt;/p&gt;
+&lt;pre&gt;sed '$! N s / \ n / /'&lt;/pre&gt;
+&lt;p&gt;Attach the 3 lines by 3&lt;/p&gt;
+&lt;pre&gt;sed '$! N s / \ n //;$! N s / \ n / /;'&lt;/pre&gt;
+&lt;p&gt;If a line ends with a backslash (\), add the following line and replace the end of line (\ n) by a space&lt;/p&gt;
+&lt;pre&gt;sed -e: a-e '/ \ \ $ / N s / \ \ \ n / /; ta'&lt;/pre&gt;
+&lt;p&gt;If a line begins with an equal sign (=), add it to the previous line and replace the equal sign (=) with a space&lt;/p&gt;
+&lt;pre&gt;sed -e: a-e '$! N s / \ n = / /; ta'-e 'P, D'&lt;/pre&gt;
+&lt;p&gt;there are also so many other uses and techniques for sed that we cannot cover all in one post, maybe you know some, share them with us in the comment box below!&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>What the Tech Industry Has Learned from Linus Torvalds</title>
+   <link href="http://jaceromri.github.io/2013/07/12/what-the-tech-industry-has-learned-from-linus-torvalds"/>
+   <updated>2013-07-12T00:00:00+01:00</updated>
+   <id>http://jaceromri.github.io/2013/07/12/what-the-tech-industry-has-learned-from-linus-torvalds</id>
+   <content type="html">&lt;p&gt;http://www.youtube.com/watch?v=7XTHdcmjenI&lt;br /&gt;
+&lt;!--more--&gt;&lt;br /&gt;
+Zemlin's career spans three of the largest technology trends to rise over the last decade: mobile &lt;a class=&quot;zem_slink&quot; title=&quot;Computing&quot; href=&quot;http://en.wikipedia.org/wiki/Computing&quot; target=&quot;_blank&quot; rel=&quot;wikipedia&quot;&gt;computing&lt;/a&gt;, &lt;a class=&quot;zem_slink&quot; title=&quot;Cloud Computing&quot; href=&quot;http://www.wikinvest.com/concept/Cloud_Computing&quot; target=&quot;_blank&quot; rel=&quot;wikinvest&quot;&gt;cloud computing&lt;/a&gt; and open source software. As executive director of The &lt;a class=&quot;zem_slink&quot; title=&quot;Linux&quot; href=&quot;http://en.wikipedia.org/wiki/Linux&quot; target=&quot;_blank&quot; rel=&quot;wikipedia&quot;&gt;Linux&lt;/a&gt; Foundation, he uses this experience to accelerate the &lt;a class=&quot;zem_slink&quot; title=&quot;Linux adoption&quot; href=&quot;http://en.wikipedia.org/wiki/Linux_adoption&quot; target=&quot;_blank&quot; rel=&quot;wikipedia&quot;&gt;adoption of Linux&lt;/a&gt; and support the future of computing. Zemlin works with the world's largest technology companies to help define the future of computing on the server, in the cloud and on a variety of new mobile computing devices.&lt;/p&gt;
+&lt;p&gt;Zemlin has been recognized as a top Linux and open source blogger and is widely quoted in the press on Linux and the changing economics of the technology industry. Zemlin also advises a variety of startups, and sits on the boards of the Global Economic Symposium, &lt;a class=&quot;zem_slink&quot; title=&quot;Open Source&quot; href=&quot;http://www.wikinvest.com/concept/Open_Source&quot; target=&quot;_blank&quot; rel=&quot;wikinvest&quot;&gt;Open Source&lt;/a&gt; For America and Chinese Open Source Promotion Union.&lt;!--more--&gt;&lt;/p&gt;
+&lt;h6 class=&quot;zemanta-related-title&quot; style=&quot;font-size:1em;&quot;&gt;Related articles&lt;/h6&gt;
+&lt;ul class=&quot;zemanta-article-ul&quot;&gt;
+&lt;li class=&quot;zemanta-article-ul-li&quot;&gt;&lt;a href=&quot;http://news.techeye.net/software/torvalds-furious-at-latest-linux-kernel&quot; target=&quot;_blank&quot;&gt;Torvalds furious at latest Linux kernel&lt;/a&gt; (news.techeye.net)&lt;/li&gt;
+&lt;/ul&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>New blog!</title>
+   <link href="http://jaceromri.github.io/2013/07/12/new-blog"/>
+   <updated>2013-07-12T00:00:00+01:00</updated>
+   <id>http://jaceromri.github.io/2013/07/12/new-blog</id>
+   <content type="html">&lt;p&gt;I am really excited to launch my new blog on wordpress.com!&lt;/p&gt;
+&lt;p&gt;i've chosen this service because it provides good functionality along with simplicity and ease of use (i am lazy remember?).&lt;/p&gt;
+&lt;p&gt;Basically i'm planning to talk about linux and open source in the first place, also other technology related stuff i have experienced (web, robotics, embedded...)&lt;/p&gt;
+&lt;p&gt;stay tuned and follow me everywhere, here, twitter, facebook... anywhere you want! you will just get my updates. Until then, wish me good luck :)&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>Isimux</title>
+   <link href="http://jaceromri.github.io/2013/07/12/isimux"/>
+   <updated>2013-07-12T00:00:00+01:00</updated>
+   <id>http://jaceromri.github.io/2013/07/12/isimux</id>
+   <content type="html">&lt;p&gt;&lt;a href=&quot;https://www.facebook.com/ISIMUX&quot;&gt;&lt;img class=&quot;size-full&quot; alt=&quot;Isimux&quot; src=&quot;http://jacerdass.files.wordpress.com/2013/07/403762_10151283091275844_326685252_n.jpg&quot; /&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;this photo was taken by &lt;a title=&quot;Chokri Khalifa&quot; href=&quot;https://www.facebook.com/chokrikhalifa&quot; target=&quot;_blank&quot;&gt;Chokri Khalifa&lt;/a&gt; during the first session of the &lt;a href=&quot;https://www.facebook.com/ISIMUX&quot; title=&quot;ISIMux&quot; target=&quot;_blank&quot;&gt;ISIMUX&lt;/a&gt; &lt;a class=&quot;zem_slink&quot; title=&quot;Free software&quot; href=&quot;http://en.wikipedia.org/wiki/Free_software&quot; target=&quot;_blank&quot; rel=&quot;wikipedia&quot;&gt;free software&lt;/a&gt; club in October 2012.&lt;br /&gt;
+The session was meant to be the opening event of the club, and host an install party for newly released &lt;a class=&quot;zem_slink&quot; title=&quot;Ubuntu (operating system)&quot; href=&quot;http://www.ubuntu.com&quot; target=&quot;_blank&quot; rel=&quot;homepage&quot;&gt;Ubuntu&lt;/a&gt; version that time: 12.10.&lt;/p&gt;
+</content>
+ </entry>
+ 
+ <entry>
+   <title>IoT related e-Health sensing Open Source Platform</title>
+   <link href="http://jaceromri.github.io/2013/07/12/iot-related-e-health-sensing-open-source-platform"/>
+   <updated>2013-07-12T00:00:00+01:00</updated>
+   <id>http://jaceromri.github.io/2013/07/12/iot-related-e-health-sensing-open-source-platform</id>
+   <content type="html">&lt;p&gt;i remember one of my friends (who's good at what he does) had a related project for his engineering graduation&lt;/p&gt;
+</content>
+ </entry>
+ 
+ 
+</feed>

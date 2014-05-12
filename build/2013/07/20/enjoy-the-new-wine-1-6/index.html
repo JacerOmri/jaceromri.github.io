@@ -1,0 +1,242 @@
+
+<!DOCTYPE html>
+<!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7 ie" lang="en"> <![endif]-->
+<!--[if IE 7]>    <html class="no-js lt-ie9 lt-ie8 ie" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="no-js lt-ie9 ie" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+	<title>Enjoy the new Wine 1.6</title>
+	<meta name="author" content="Jacer Omri">
+	<link href='/assets/themes/the-minimum/css/style.css' rel="stylesheet" media="all">
+	<link href="http://feeds.feedburner.com/" rel="alternate" title="Enjoy the new Wine 1.6" type="application/atom+xml">
+	<script src="http://cdnjs.cloudflare.com/ajax/libs/modernizr/2.0.6/modernizr.min.js"></script>
+</head>
+<body>
+
+<div id="page" class="hentry">
+	<header class="the-header">
+		<div class="unit-head">
+			<div class="unit-inner unit-head-inner">
+				<p class="logo"><a href="/">Jacer Omri Blog</a></p>
+				<nav class="nav-global">
+					<ul>
+						<li class="archive"><a href="/archive.html">archive</a></li>
+						<li class="page"><a href="/pages.html">pages</a></li>
+						<li class="category"><a href="/categories.html">categories</a></li>
+						<li class="tag"><a href="/tags.html">tags</a></li>
+					</ul>
+				</nav>
+			</div><!-- unit-inner -->
+		</div><!-- unit-head -->
+	</header>
+	<div class="body" role="main">
+		<div class="unit-body">
+			<div class="unit-inner unit-body-inner">
+				<div class="entry-content">
+					
+<article class="unit-article layout-post">
+	<div class="unit-inner unit-article-inner">
+		<div class="content">
+			<header>
+				<div class="unit-head">
+					<div class="unit-inner unit-head-inner">
+						<h1 class="h2 entry-title">Enjoy the new Wine 1.6</h1>
+					</div><!-- unit-inner -->
+				</div><!-- unit-head -->
+			</header>
+
+			<div class="bd">
+				<div class="entry-content">
+					<p>The Wine development team have made version 1.6 available after 16 months of hard work. There are about 10,000 different changes. Highlights include the new Mac driver, complete support for window transparency and a new package for mono. NET support.<!--more--><br />
+Let's start with the practical part: installing WIne 1.6. There is a PPA and is thus completely free of pain and with the usual triple jump:</p>
+<pre>sudo apt-add-repository ppa:ubuntu-wine/ppa
+sudo apt-get update
+sudo apt-get install wine1.6</pre>
+<p>Personally it i had Wine 1.6-rc5 installed, but this version should not have much (if any) differ from the final one.</p>
+<p>Those who prefer to install it via source code, you can find it at <a href="http://prdownloads.sourceforge.net/wine/wine-1.6.tar.bz2">sourceforge.net</a> or <a href="http://mirrors.ibiblio.org/wine/source/1.6/wine-1.6.tar.bz2">ibiblio.org</a> . You can find installation instructions for many distributions (Ubuntu, Fedora, openSUSE, <a class="zem_slink" title="NYSE: RHT" href="http://quicken.intuit.com/investing/stock-quotes/RHT/Red-Hat-Inc" target="_blank" rel="quicken">Red Hat</a>, Debian, Slackware, FreeBSD, PC-BSD) in the <a href="http://www.winehq.org/download">download section of the project page</a>, obtaining the code from git is also possible: <a href="http://www.winehq.org/git">www.winehq.org/git</a>.</p>
+<h1>What's new in Wine 1.6</h1>
+<p>The list is very long and there is a detailed changelog in the <a href="http://www.winehq.org/announce/1.6" target="_blank">official announcement</a>. I have highlighted some here:</p>
+<ul>
+<li>Window transparency support, including both color keying and alpha blending transparency;</li>
+<li>All window rendering is now done on the client-side using the DIB engine (except for <a class="zem_slink" title="OpenGL" href="http://www.opengl.org/" target="_blank" rel="homepage">OpenGL</a> rendering). This means that rendering to windows or bitmaps gives identical results;</li>
+<li>X11 server-side font rendering is no longer supported. All fonts are rendered client-side using <a class="zem_slink" title="FreeType" href="http://freetype.org/" target="_blank" rel="homepage">FreeType</a>;</li>
+<li>There are significant performance improvements in the DIB engine, particularly for text rendering, bitmap stretching, alpha blending, and gradients;</li>
+<li>Sub-pixel font anti-aliasing is now supported in the DIB engine, using the system anti-aliasing configuration from <a class="zem_slink" title="Fontconfig" href="http://fontconfig.org/" target="_blank" rel="homepage">FontConfig</a>;</li>
+<li>Raw input support for keyboard and mouse;</li>
+<li>There is a joystick applet in the control panel, to allow configuring joysticks and testing their behavior;</li>
+<li>Support for Randr 1.2 and 1.3;</li>
+<li><a class="zem_slink" title="DOSBox" href="http://www.dosbox.com" target="_blank" rel="homepage">DOSBox</a> is tried first when running a <a class="zem_slink" title="DOS" href="http://en.wikipedia.org/wiki/DOS" target="_blank" rel="wikipedia">DOS application</a>. The Wine DOS support is only used as a fallback when DOSBox cannot be found, and will be removed in a future release;</li>
+<li>Wine can now be configured to report the Windows version as 'Windows 8';</li>
+<li>The Mono runtime is packaged as an MSI file, and its installation can be managed from the "Add/Remove Programs" control panel. It is automatically installed on Wine prefix updates;</li>
+<li>The Microsoft .NET 4.0 runtime can be installed for cases where Mono is not good enough yet;</li>
+<li>HTTPS connections use <a class="zem_slink" title="GnuTLS" href="http://www.gnutls.org/" target="_blank" rel="homepage">GnuTLS</a> (or Secure Transport on <a class="zem_slink" title="OS X" href="http://www.apple.com/osx" target="_blank" rel="homepage">Mac OS X</a>). <a class="zem_slink" title="OpenSSL" href="http://www.openssl.org/" target="_blank" rel="homepage">OpenSSL</a> is no longer used;</li>
+<li>The Direct3D 9Ex implementation is more complete;</li>
+<li>Improvements to various parts of the D3DX9 and Direct3D 10 implementations;</li>
+<li>Audio device enumeration has been improved, and multi-channel devices are better supported;</li>
+<li>VMR-9 video rendering has been implemented;</li>
+<li>On Linux, dynamic device management supports the UDisks2 service;</li>
+<li>Building Wine for the ARM64 platform is now supported;</li>
+<li>Preliminary support for building Wine for Android using the <a class="zem_slink" title="Android software development" href="http://en.wikipedia.org/wiki/Android_software_development" target="_blank" rel="wikipedia">Android NDK</a>;</li>
+<li>A native Mac OS X driver has been implemented, for better integration with the Mac desktop environment. The full range of driver features are supported, including OpenGL, window management, clipboard, drag &amp; drop, system tray, etc.</li>
+</ul>
+<p>Post your experience with Wince 1.6 in the comment box below.</p>
+
+					<div class="meta">
+						<p class="date-publish">
+							Published: 
+							<date class="date-pub" title="2013-07-20T00:00:00+01:00" datetime="2013-07-20T00:00:00+01:00" pubdate>
+							<span class="month"><abbr>July</abbr></span>
+							<span class="day">20</span>
+							<span class="year">2013</span>
+							</date>
+						</p>
+						<ul class="list-category list-linear">
+							<li class="list-head">category: </li>
+							
+							
+
+
+  
+     
+    	<li><a href="/categories.html#News-ref">
+    		News <span>6</span>
+    	</a></li>
+    
+  
+
+
+						</ul>
+						<ul class="list-tag list-linear">
+							<li class="list-head">tags: </li>
+							
+							
+
+
+  
+     
+    	<li><a href="/tags.html#DOS-ref">DOS <span>1</span></a></li>
+     
+    	<li><a href="/tags.html#DOSBox-ref">DOSBox <span>1</span></a></li>
+     
+    	<li><a href="/tags.html#linux-ref">linux <span>7</span></a></li>
+     
+    	<li><a href="/tags.html#OpenGL-ref">OpenGL <span>1</span></a></li>
+     
+    	<li><a href="/tags.html#Windows-ref">Windows <span>1</span></a></li>
+     
+    	<li><a href="/tags.html#Wine-ref">Wine <span>1</span></a></li>
+    
+  
+
+
+
+						</ul>
+					</div><!-- meta -->
+				</div><!-- entry-content -->
+				<div class="misc-content">
+					<div class="social">
+						<ul class="list-linear">
+							<li><div class="twitter-tweet"><a href="https://twitter.com/share" class="twitter-share-button" data-count="horizontal" data-via="JacerOmri" data-lang="en">Tweet</a></div></li>
+							<li><div class="twitter-follow"><a href="https://twitter.com/JacerOmri" class="twitter-follow-button" data-show-count="false" data-lang="en"></a></div></li>
+							<li><div class="g-plusone" data-size="medium"></div></li>
+							<li><div class="fb-like" data-href="/2013/07/20/enjoy-the-new-wine-1-6" data-send="false" data-layout="button_count" data-width="450" data-show-faces="false" data-font="verdana"></div></li>
+						</ul>
+					</div>
+					
+					
+
+
+  <div id="disqus_thread"></div>
+<script type="text/javascript">
+    var disqus_developer = 1;
+    var disqus_shortname = 'jaceromriblog'; // required: replace example with your forum shortname
+    
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+
+
+				</div><!-- misc-content -->
+				
+			</div><!-- bd -->
+			<footer class="unit-foot">
+				<div class="unit-inner unit-foot-inner">
+					<nav class="pagination">
+						<ul>
+							
+							<li class="prev"><a class="internal" rel="prev"  href="/2013/07/19/using-google-translate-in-php" title="View Using Google Translate in PHP">&laquo; Using Google Translate in PHP</a></li>
+							
+							
+							<li class="pipe"> | </li>
+							
+							
+							<li class="next"><a class="internal" rel="next"  href="/2013/07/21/create-a-speaking-linux-shell-script-with-google" title="View Create a speaking Linux shell script with Google">Create a speaking Linux shell script with Google &raquo;</a></li>
+							
+						</ul>
+					</nav>
+					<p class="gotop">
+						<a href="#page">Back to Top</a>
+					</p>
+				</div>
+			</footer>
+
+		</div><!-- content -->
+	</div><!-- unit-inner -->
+</article>
+
+
+				</div>
+			</div><!-- unit-inner -->
+		</div><!-- unit-body -->
+	</div><!-- body -->
+	<footer class="the-footer">
+		<div class="unit-foot">
+			<div class="unit-inner unit-foot-inner">
+				<div class="misc vcard">
+					<h4>about</h4>
+					<ul>
+						<li class="contact"><address><span class="author fn n">Jacer Omri</span> - <span class="fn email">jokerhacker.jacer@gmail.com</span></address></li>
+						<li class="github"><a href="http://github.com/JacerOmri/" rel="me">github.com/JacerOmri</a></li>
+						<li class="twitter"><a href="http://twitter.com/JacerOmri/" rel="me">twitter.com/JacerOmri</a></li>
+						<li class="rss"><a href="http://feeds.feedburner.com/JacerOmriBlog">Subscribe to RSS Feed</a></li>
+					</ul>
+				</div><!-- misc -->
+				<p class="licence">
+					Theme: <a href="http://layouts-the.me">the_minimum</a> based on <a href="http://jekyllbootstrap.com/">Jekyll-bootstrap</a>.<br>
+					Powered by <a href="https://github.com/mojombo/jekyll">Jekyll</a>.
+				</p>
+			</div><!-- unit-foot-inner -->
+		</div><!-- unit-foot -->
+	</footer>
+</div><!-- page -->
+<script>
+	(function(d, s) {
+		var js, fjs = d.getElementsByTagName(s)[0], load = function(url, id) {
+		if (d.getElementById(id)) {return;}
+		js = d.createElement(s); js.src = url; js.id = id;
+		fjs.parentNode.insertBefore(js, fjs);
+		};
+	load('//platform.twitter.com/widgets.js', 'tweetjs');
+	load('https://apis.google.com/js/plusone.js', 'gplus1js'); // Checkout http://j.mp/ApDgMr for usage html for this is <div class="g-plusone" data-size="medium"></div>
+	load('//connect.facebook.net/en_US/all.js#xfbml=1', 'fbjssdk'); // Checkout http://j.mp/wZw2xR for using open graph protorol html for this is <div class="fb-like" data-href="/2013/07/20/enjoy-the-new-wine-1-6" data-send="false" data-layout="button_count" data-width="450" data-show-faces="false" data-font="verdana"></div>
+	}(document, 'script'));
+</script>
+<script>
+/*! A fix for the iOS orientationchange zoom bug.Script by @scottjehl, rebound by @wilto. MIT License.*/
+(function(j){var i=j.document;if(!i.querySelectorAll){return}var l=i.querySelectorAll("meta[name=viewport]")[0],a=l&&l.getAttribute("content"),h=a+", maximum-scale=1.0",d=a+", maximum-scale=10.0",g=true,c=j.orientation,k=0;if(!l){return}function f(){l.setAttribute("content",d);g=true}function b(){l.setAttribute("content",h);g=false}function e(m){c=Math.abs(j.orientation);k=Math.abs(m.gamma);if(k>8&&c===0){if(g){b()}}else{if(!g){f()}}}j.addEventListener("orientationchange",f,false);j.addEventListener("deviceorientation",e,false)})(this);
+</script>
+
+  
+</body>
+</html>
+

@@ -1,0 +1,247 @@
+
+<!DOCTYPE html>
+<!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7 ie" lang="en"> <![endif]-->
+<!--[if IE 7]>    <html class="no-js lt-ie9 lt-ie8 ie" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="no-js lt-ie9 ie" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+	<title>Hacking Google Voice API in Linux</title>
+	<meta name="author" content="Jacer Omri">
+	<link href='/assets/themes/the-minimum/css/style.css' rel="stylesheet" media="all">
+	<link href="http://feeds.feedburner.com/" rel="alternate" title="Hacking Google Voice API in Linux" type="application/atom+xml">
+	<script src="http://cdnjs.cloudflare.com/ajax/libs/modernizr/2.0.6/modernizr.min.js"></script>
+</head>
+<body>
+
+<div id="page" class="hentry">
+	<header class="the-header">
+		<div class="unit-head">
+			<div class="unit-inner unit-head-inner">
+				<p class="logo"><a href="/">Jacer Omri Blog</a></p>
+				<nav class="nav-global">
+					<ul>
+						<li class="archive"><a href="/archive.html">archive</a></li>
+						<li class="page"><a href="/pages.html">pages</a></li>
+						<li class="category"><a href="/categories.html">categories</a></li>
+						<li class="tag"><a href="/tags.html">tags</a></li>
+					</ul>
+				</nav>
+			</div><!-- unit-inner -->
+		</div><!-- unit-head -->
+	</header>
+	<div class="body" role="main">
+		<div class="unit-body">
+			<div class="unit-inner unit-body-inner">
+				<div class="entry-content">
+					
+<article class="unit-article layout-post">
+	<div class="unit-inner unit-article-inner">
+		<div class="content">
+			<header>
+				<div class="unit-head">
+					<div class="unit-inner unit-head-inner">
+						<h1 class="h2 entry-title">Hacking Google Voice API in Linux</h1>
+					</div><!-- unit-inner -->
+				</div><!-- unit-head -->
+			</header>
+
+			<div class="bd">
+				<div class="entry-content">
+					<p>You should have seen voice-aware input zones coming with the new google chrome release about a month ago. Yeah it's a cool way to input text easily without typing for long seconds, with the opportunity to get search results for "laughable clothes" when you say "fashionable clothes". Seriously i cannot see how this is useful, especially when it comes to <a class="zem_slink" title="Desktop computer" href="http://en.wikipedia.org/wiki/Desktop_computer" target="_blank" rel="wikipedia">desktop PCs</a>.</p>
+<p>But there's a good guy on the internet who happily made good use of it. He made a <a class="zem_slink" title="Shell script" href="http://en.wikipedia.org/wiki/Shell_script" target="_blank" rel="wikipedia">shell script</a> that listens to your voice and use <a class="zem_slink" title="Google Voice" href="http://www.google.com/googlevoice/about.html" target="_blank" rel="homepage">Google Voice</a> <a class="zem_slink" title="Application programming interface" href="http://en.wikipedia.org/wiki/Application_programming_interface" target="_blank" rel="wikipedia">API</a> to decode it and convert it to text. I will be explaining this hack he made so you all can make good use of it.<!--more--></p>
+<p>First thing is we need a url for the API, do we define the API variable</p>
+<pre>API="http://www.google.com/speech-api/v1/recognize?lang=en"</pre>
+<p>Note that at the end of  it there is this lang parameter, we can make our script more efficient if it would be able to handle multiple languages, let's put it in a variable, or maybe get it passed as an argument :)</p>
+<pre>if [ -z "$1" ]
+  then
+    echo "No language supplied, using en\n"
+    LANG="en"
+  else
+    echo "using $1 as language\n"
+    LANG="$1"
+fi
+API="http://www.google.com/speech-api/v1/recognize?lang=$LANG"</pre>
+<p>Now we need to send to this url a sound file containing our voice. But it's not that simple of course, we need:</p>
+<ul>
+<li><strong>arecord</strong> to record our voice over the mic</li>
+<li><strong><a class="zem_slink" title="FLAC" href="http://flac.sourceforge.net/" target="_blank" rel="homepage">flac</a></strong> to convert the <a class="zem_slink" title="File format" href="http://en.wikipedia.org/wiki/File_format" target="_blank" rel="wikipedia">file format</a></li>
+<li><strong>wget</strong> to interact with the api</li>
+</ul>
+<p>Make sure these 3 packages are installed, if not, you can always use your package manager like <strong>apt-get</strong> to install it. The reason we're converting the file into flac format is that is required by the API itself. Now let's mix things together!</p>
+<pre>JSON=`arecord -f cd -t wav -d 3 -r 16000 | flac - -f --best --sample-rate 16000 -o out.flac;\
+wget -O - -o /dev/null --post-file out.flac --header="Content-Type: audio/x-flac; rate=16000" "$API"`</pre>
+<p>As you can see, we did good so far and the script will receive the response in JSON format, so we need to parse it using <a href="http://jacerdass.wordpress.com/2013/07/13/sed-command-tips-and-tricks/">sed</a> and awk. I already wrote an article about <a href="http://jacerdass.wordpress.com/2013/07/13/sed-command-tips-and-tricks/">sed</a> here, you want to check it out. This may look freaky but it does the job</p>
+<pre>UTTERANCE=`echo $JSON\
+ |sed -e 's/[{}]/''/g'\
+  |awk -v k="text" '{n=split($0,a,","); for (i=1; i&lt;=n; i++) print a[i]; exit }'\
+   |awk -F: 'NR==3 { print $3; exit }'\
+    |sed -e 's/["]/''/g'`
+echo "utterance: $UTTERANCE"</pre>
+<p>Yeah now we had our script to echo the text! That seems pretty geeky, but how can this be useful? Controlling our PC maybe? why not! To do that we must define string to which the script compares the final text, if it matches one of the strings, it executes the corresponding command.</p>
+<pre>CMD_LIST_DIRECTORY="list directory"
+CMD_WHOAMI="who am i"
+if [ `echo "$UTTERANCE" | grep -ic "^$CMD_LIST_DIRECTORY$"` -gt 0 ]; then
+     ls .
+elif [ `echo "$UTTERANCE" | grep -ic "^$CMD_WHOAMI$"` -gt 0 ]; then
+     whoami
+fi</pre>
+<p>We can define countless numbers of commands, i will be working on using arrays for this (maybe one of you can do it for us :) ). You can find a complete script <a href="https://gist.github.com/JokerHacker/6003852" target="_blank">here</a> if you are too lazy to save a new file :p</p>
+<p>Guess what, we just made good use of Google Voice API! I will leave you to test it, improve it and why not share it. Your comments are welcome.</p>
+
+					<div class="meta">
+						<p class="date-publish">
+							Published: 
+							<date class="date-pub" title="2013-07-16T00:00:00+01:00" datetime="2013-07-16T00:00:00+01:00" pubdate>
+							<span class="month"><abbr>July</abbr></span>
+							<span class="day">16</span>
+							<span class="year">2013</span>
+							</date>
+						</p>
+						<ul class="list-category list-linear">
+							<li class="list-head">category: </li>
+							
+							
+
+
+  
+     
+    	<li><a href="/categories.html#Tutorials-ref">
+    		Tutorials <span>9</span>
+    	</a></li>
+    
+  
+
+
+						</ul>
+						<ul class="list-tag list-linear">
+							<li class="list-head">tags: </li>
+							
+							
+
+
+  
+     
+    	<li><a href="/tags.html#Google Voice-ref">Google Voice <span>1</span></a></li>
+     
+    	<li><a href="/tags.html#hack-ref">hack <span>2</span></a></li>
+     
+    	<li><a href="/tags.html#JSON-ref">JSON <span>1</span></a></li>
+     
+    	<li><a href="/tags.html#linux-ref">linux <span>7</span></a></li>
+     
+    	<li><a href="/tags.html#shell-ref">shell <span>2</span></a></li>
+    
+  
+
+
+
+						</ul>
+					</div><!-- meta -->
+				</div><!-- entry-content -->
+				<div class="misc-content">
+					<div class="social">
+						<ul class="list-linear">
+							<li><div class="twitter-tweet"><a href="https://twitter.com/share" class="twitter-share-button" data-count="horizontal" data-via="JacerOmri" data-lang="en">Tweet</a></div></li>
+							<li><div class="twitter-follow"><a href="https://twitter.com/JacerOmri" class="twitter-follow-button" data-show-count="false" data-lang="en"></a></div></li>
+							<li><div class="g-plusone" data-size="medium"></div></li>
+							<li><div class="fb-like" data-href="/2013/07/16/hacking-google-voice-api-in-linux" data-send="false" data-layout="button_count" data-width="450" data-show-faces="false" data-font="verdana"></div></li>
+						</ul>
+					</div>
+					
+					
+
+
+  <div id="disqus_thread"></div>
+<script type="text/javascript">
+    var disqus_developer = 1;
+    var disqus_shortname = 'jaceromriblog'; // required: replace example with your forum shortname
+    
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+
+
+				</div><!-- misc-content -->
+				
+			</div><!-- bd -->
+			<footer class="unit-foot">
+				<div class="unit-inner unit-foot-inner">
+					<nav class="pagination">
+						<ul>
+							
+							<li class="prev"><a class="internal" rel="prev"  href="/2013/07/15/node-js-first-steps" title="View Node.js: First Steps">&laquo; Node.js: First Steps</a></li>
+							
+							
+							<li class="pipe"> | </li>
+							
+							
+							<li class="next"><a class="internal" rel="next"  href="/2013/07/17/web-scrapping-done-right-using-php" title="View Web scraping done right using PHP">Web scraping done right using PHP &raquo;</a></li>
+							
+						</ul>
+					</nav>
+					<p class="gotop">
+						<a href="#page">Back to Top</a>
+					</p>
+				</div>
+			</footer>
+
+		</div><!-- content -->
+	</div><!-- unit-inner -->
+</article>
+
+
+				</div>
+			</div><!-- unit-inner -->
+		</div><!-- unit-body -->
+	</div><!-- body -->
+	<footer class="the-footer">
+		<div class="unit-foot">
+			<div class="unit-inner unit-foot-inner">
+				<div class="misc vcard">
+					<h4>about</h4>
+					<ul>
+						<li class="contact"><address><span class="author fn n">Jacer Omri</span> - <span class="fn email">jokerhacker.jacer@gmail.com</span></address></li>
+						<li class="github"><a href="http://github.com/JacerOmri/" rel="me">github.com/JacerOmri</a></li>
+						<li class="twitter"><a href="http://twitter.com/JacerOmri/" rel="me">twitter.com/JacerOmri</a></li>
+						<li class="rss"><a href="http://feeds.feedburner.com/JacerOmriBlog">Subscribe to RSS Feed</a></li>
+					</ul>
+				</div><!-- misc -->
+				<p class="licence">
+					Theme: <a href="http://layouts-the.me">the_minimum</a> based on <a href="http://jekyllbootstrap.com/">Jekyll-bootstrap</a>.<br>
+					Powered by <a href="https://github.com/mojombo/jekyll">Jekyll</a>.
+				</p>
+			</div><!-- unit-foot-inner -->
+		</div><!-- unit-foot -->
+	</footer>
+</div><!-- page -->
+<script>
+	(function(d, s) {
+		var js, fjs = d.getElementsByTagName(s)[0], load = function(url, id) {
+		if (d.getElementById(id)) {return;}
+		js = d.createElement(s); js.src = url; js.id = id;
+		fjs.parentNode.insertBefore(js, fjs);
+		};
+	load('//platform.twitter.com/widgets.js', 'tweetjs');
+	load('https://apis.google.com/js/plusone.js', 'gplus1js'); // Checkout http://j.mp/ApDgMr for usage html for this is <div class="g-plusone" data-size="medium"></div>
+	load('//connect.facebook.net/en_US/all.js#xfbml=1', 'fbjssdk'); // Checkout http://j.mp/wZw2xR for using open graph protorol html for this is <div class="fb-like" data-href="/2013/07/16/hacking-google-voice-api-in-linux" data-send="false" data-layout="button_count" data-width="450" data-show-faces="false" data-font="verdana"></div>
+	}(document, 'script'));
+</script>
+<script>
+/*! A fix for the iOS orientationchange zoom bug.Script by @scottjehl, rebound by @wilto. MIT License.*/
+(function(j){var i=j.document;if(!i.querySelectorAll){return}var l=i.querySelectorAll("meta[name=viewport]")[0],a=l&&l.getAttribute("content"),h=a+", maximum-scale=1.0",d=a+", maximum-scale=10.0",g=true,c=j.orientation,k=0;if(!l){return}function f(){l.setAttribute("content",d);g=true}function b(){l.setAttribute("content",h);g=false}function e(m){c=Math.abs(j.orientation);k=Math.abs(m.gamma);if(k>8&&c===0){if(g){b()}}else{if(!g){f()}}}j.addEventListener("orientationchange",f,false);j.addEventListener("deviceorientation",e,false)})(this);
+</script>
+
+  
+</body>
+</html>
+

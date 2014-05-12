@@ -1,0 +1,248 @@
+
+<!DOCTYPE html>
+<!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7 ie" lang="en"> <![endif]-->
+<!--[if IE 7]>    <html class="no-js lt-ie9 lt-ie8 ie" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="no-js lt-ie9 ie" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+	<title>Most efficient way to deal with 3G modems in Ubuntu</title>
+	<meta name="author" content="Jacer Omri">
+	<link href='/assets/themes/the-minimum/css/style.css' rel="stylesheet" media="all">
+	<link href="http://feeds.feedburner.com/" rel="alternate" title="Most efficient way to deal with 3G modems in Ubuntu" type="application/atom+xml">
+	<script src="http://cdnjs.cloudflare.com/ajax/libs/modernizr/2.0.6/modernizr.min.js"></script>
+</head>
+<body>
+
+<div id="page" class="hentry">
+	<header class="the-header">
+		<div class="unit-head">
+			<div class="unit-inner unit-head-inner">
+				<p class="logo"><a href="/">Jacer Omri Blog</a></p>
+				<nav class="nav-global">
+					<ul>
+						<li class="archive"><a href="/archive.html">archive</a></li>
+						<li class="page"><a href="/pages.html">pages</a></li>
+						<li class="category"><a href="/categories.html">categories</a></li>
+						<li class="tag"><a href="/tags.html">tags</a></li>
+					</ul>
+				</nav>
+			</div><!-- unit-inner -->
+		</div><!-- unit-head -->
+	</header>
+	<div class="body" role="main">
+		<div class="unit-body">
+			<div class="unit-inner unit-body-inner">
+				<div class="entry-content">
+					
+<article class="unit-article layout-post">
+	<div class="unit-inner unit-article-inner">
+		<div class="content">
+			<header>
+				<div class="unit-head">
+					<div class="unit-inner unit-head-inner">
+						<h1 class="h2 entry-title">Most efficient way to deal with 3G modems in Ubuntu</h1>
+					</div><!-- unit-inner -->
+				</div><!-- unit-head -->
+			</header>
+
+			<div class="bd">
+				<div class="entry-content">
+					<p>It's been a while since the last time I wrote on my blog. Today I thought I should talk about the issues met when using 3G <a class="zem_slink" title="Universal Serial Bus" href="http://en.wikipedia.org/wiki/Universal_Serial_Bus" target="_blank" rel="wikipedia">USB</a> modems on <a class="zem_slink" title="Ubuntu (operating system)" href="http://www.ubuntu.com" target="_blank" rel="homepage">Ubuntu</a> (<a class="zem_slink" title="Linux distribution" href="http://en.wikipedia.org/wiki/Linux_distribution" target="_blank" rel="wikipedia">Linux distros</a> generally) since I noticed that it annoys many people because they don't work properly.<!--more--></p>
+<p>Some years ago I came up with a small workaround to this problem when I encountered it for the first time. I used usb_modswitch to properly recognise the device. Then I wrapped it in a script and started distributing it to my friends. Soon, I realized that this wasn't a solution, it did work sometimes, but it wasn't efficient.</p>
+<p>So I started digging deeper to find alternative solutions, and I've seen the "sakis3g" project. This project, seemed immature for me in the first time, is script which uses usb_modswitch mainly to make these devices switch from mass storage mode to modem mode. After more releases of this project, it have been becoming more efficient and stable. I tried it on many machines and it worked on all cases so far.</p>
+<h2>Installing Sakis3g</h2>
+<p>there are 2 available options to get sakis3g working on your machine:</p>
+<ul>
+<li><a class="zem_slink" title="Compiler" href="http://en.wikipedia.org/wiki/Compiler" target="_blank" rel="wikipedia">compiling</a> the <a class="zem_slink" title="Source code" href="http://en.wikipedia.org/wiki/Source_code" target="_blank" rel="wikipedia">source code</a> (if you're geeky enough).</li>
+<li>installing it from a ppa.</li>
+</ul>
+<h3>Compiling sakis3g</h3>
+<p>To compile sakis3g , we need to get the source code from github and compile it. This is done using these commands:</p>
+<pre>git clone https://github.com/trixarian/sakis3g-source.git
+ cd sakis3g-source
+ mkdir build
+ ./compile
+ <a class="zem_slink" title="Sudo" href="http://www.sudo.ws" target="_blank" rel="homepage">sudo</a> cp build/sakis3gz /usr/bin/sakis3g</pre>
+<h3> Installing from <a class="zem_slink" title="Personal Package Archive" href="http://en.wikipedia.org/wiki/Personal_Package_Archive" target="_blank" rel="wikipedia">PPA</a></h3>
+<p>getting packages from PPAs saves up a great deal of time and effort. I found a ppa that holds sakis3g even for the latest release of ubuntu (saucy). To add the ppa and install sakis3g:</p>
+<pre>sudo add-apt-repository ppa:darklordpaunik8880/darksmsaucy
+sudo <a class="zem_slink" title="Advanced Packaging Tool" href="http://wiki.debian.org/Apt" target="_blank" rel="homepage">apt-get</a> update
+sudo apt-get install sakis3g</pre>
+<h4>Update for trusty tahr users (ubuntu 14.04)</h4>
+<p>Ubuntu 14.04 need to use a new ppa to grab the binary package.</p>
+<pre>sudo add-apt-repository ppa:darklordpaunik8880/darkminttrustytahr
+sudo <a class="zem_slink" title="Advanced Packaging Tool" href="http://wiki.debian.org/Apt" target="_blank" rel="homepage">apt-get</a> update
+sudo apt-get install sakis3g</pre>
+<p>Here we go, sakis3g is now installed</p>
+<h2>Using Sakis3g</h2>
+<p>I will not go through <a class="zem_slink" title="Command-line interface" href="http://en.wikipedia.org/wiki/Command-line_interface" target="_blank" rel="wikipedia">command lines</a> anymore, since saki3g offers us a nice <a class="zem_slink" title="Graphical user interface" href="http://en.wikipedia.org/wiki/Graphical_user_interface" target="_blank" rel="wikipedia">graphical interface</a> to use it. But to enable this interface we need to one last command</p>
+<pre>sudo sakis3g desktop</pre>
+<p>this command will create a launcher on the desktop. Go ahead and launch it, I'm pretty sure you will know how to use it ;)</p>
+<div>
+<div>
+<div id="js-repo-pjax-container">
+<div id="readme">
+<article>[caption id="attachment_210" align="aligncenter" width="340"]<a href="http://jacerdass.files.wordpress.com/2013/12/screenshot-from-2013-09-28-20-42-13.png"><img class="size-full wp-image-210 " alt="Sakis3g Screenshot" src="http://jacerdass.files.wordpress.com/2013/12/screenshot-from-2013-09-28-20-42-13.png" width="340" height="238" /></a> Sakis3g Screenshot[/caption]
+<p>I would recommend not to configure connection through sakis3g since it's a bit buggy, make a new broadband connection from your network manager and use sakis3g just to switch you modem, then connect using the previously created configuration.</p>
+<p>Don't forget to share :)</p>
+</article>
+</div>
+</div>
+</div>
+</div>
+
+					<div class="meta">
+						<p class="date-publish">
+							Published: 
+							<date class="date-pub" title="2013-12-03T00:00:00+01:00" datetime="2013-12-03T00:00:00+01:00" pubdate>
+							<span class="month"><abbr>December</abbr></span>
+							<span class="day">03</span>
+							<span class="year">2013</span>
+							</date>
+						</p>
+						<ul class="list-category list-linear">
+							<li class="list-head">category: </li>
+							
+							
+
+
+  
+     
+    	<li><a href="/categories.html#Tutorials-ref">
+    		Tutorials <span>9</span>
+    	</a></li>
+    
+  
+
+
+						</ul>
+						<ul class="list-tag list-linear">
+							<li class="list-head">tags: </li>
+							
+							
+
+
+  
+     
+    	<li><a href="/tags.html#3g-ref">3g <span>1</span></a></li>
+     
+    	<li><a href="/tags.html#linux-ref">linux <span>7</span></a></li>
+     
+    	<li><a href="/tags.html#modem-ref">modem <span>1</span></a></li>
+     
+    	<li><a href="/tags.html#Ubuntu-ref">Ubuntu <span>4</span></a></li>
+     
+    	<li><a href="/tags.html#Universal Serial Bus-ref">Universal Serial Bus <span>1</span></a></li>
+     
+    	<li><a href="/tags.html#usb-ref">usb <span>1</span></a></li>
+    
+  
+
+
+
+						</ul>
+					</div><!-- meta -->
+				</div><!-- entry-content -->
+				<div class="misc-content">
+					<div class="social">
+						<ul class="list-linear">
+							<li><div class="twitter-tweet"><a href="https://twitter.com/share" class="twitter-share-button" data-count="horizontal" data-via="JacerOmri" data-lang="en">Tweet</a></div></li>
+							<li><div class="twitter-follow"><a href="https://twitter.com/JacerOmri" class="twitter-follow-button" data-show-count="false" data-lang="en"></a></div></li>
+							<li><div class="g-plusone" data-size="medium"></div></li>
+							<li><div class="fb-like" data-href="/2013/12/03/most-efficient-way-to-deal-with-3g-modems-in-ubuntu" data-send="false" data-layout="button_count" data-width="450" data-show-faces="false" data-font="verdana"></div></li>
+						</ul>
+					</div>
+					
+					
+
+
+  <div id="disqus_thread"></div>
+<script type="text/javascript">
+    var disqus_developer = 1;
+    var disqus_shortname = 'jaceromriblog'; // required: replace example with your forum shortname
+    
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+
+
+				</div><!-- misc-content -->
+				
+			</div><!-- bd -->
+			<footer class="unit-foot">
+				<div class="unit-inner unit-foot-inner">
+					<nav class="pagination">
+						<ul>
+							
+							<li class="prev"><a class="internal" rel="prev"  href="/2013/08/03/ignore-torvalds-cpp-is-fun" title="View Ignore Linus, C++ is fun">&laquo; Ignore Linus, C++ is fun</a></li>
+							
+							
+							
+						</ul>
+					</nav>
+					<p class="gotop">
+						<a href="#page">Back to Top</a>
+					</p>
+				</div>
+			</footer>
+
+		</div><!-- content -->
+	</div><!-- unit-inner -->
+</article>
+
+
+				</div>
+			</div><!-- unit-inner -->
+		</div><!-- unit-body -->
+	</div><!-- body -->
+	<footer class="the-footer">
+		<div class="unit-foot">
+			<div class="unit-inner unit-foot-inner">
+				<div class="misc vcard">
+					<h4>about</h4>
+					<ul>
+						<li class="contact"><address><span class="author fn n">Jacer Omri</span> - <span class="fn email">jokerhacker.jacer@gmail.com</span></address></li>
+						<li class="github"><a href="http://github.com/JacerOmri/" rel="me">github.com/JacerOmri</a></li>
+						<li class="twitter"><a href="http://twitter.com/JacerOmri/" rel="me">twitter.com/JacerOmri</a></li>
+						<li class="rss"><a href="http://feeds.feedburner.com/JacerOmriBlog">Subscribe to RSS Feed</a></li>
+					</ul>
+				</div><!-- misc -->
+				<p class="licence">
+					Theme: <a href="http://layouts-the.me">the_minimum</a> based on <a href="http://jekyllbootstrap.com/">Jekyll-bootstrap</a>.<br>
+					Powered by <a href="https://github.com/mojombo/jekyll">Jekyll</a>.
+				</p>
+			</div><!-- unit-foot-inner -->
+		</div><!-- unit-foot -->
+	</footer>
+</div><!-- page -->
+<script>
+	(function(d, s) {
+		var js, fjs = d.getElementsByTagName(s)[0], load = function(url, id) {
+		if (d.getElementById(id)) {return;}
+		js = d.createElement(s); js.src = url; js.id = id;
+		fjs.parentNode.insertBefore(js, fjs);
+		};
+	load('//platform.twitter.com/widgets.js', 'tweetjs');
+	load('https://apis.google.com/js/plusone.js', 'gplus1js'); // Checkout http://j.mp/ApDgMr for usage html for this is <div class="g-plusone" data-size="medium"></div>
+	load('//connect.facebook.net/en_US/all.js#xfbml=1', 'fbjssdk'); // Checkout http://j.mp/wZw2xR for using open graph protorol html for this is <div class="fb-like" data-href="/2013/12/03/most-efficient-way-to-deal-with-3g-modems-in-ubuntu" data-send="false" data-layout="button_count" data-width="450" data-show-faces="false" data-font="verdana"></div>
+	}(document, 'script'));
+</script>
+<script>
+/*! A fix for the iOS orientationchange zoom bug.Script by @scottjehl, rebound by @wilto. MIT License.*/
+(function(j){var i=j.document;if(!i.querySelectorAll){return}var l=i.querySelectorAll("meta[name=viewport]")[0],a=l&&l.getAttribute("content"),h=a+", maximum-scale=1.0",d=a+", maximum-scale=10.0",g=true,c=j.orientation,k=0;if(!l){return}function f(){l.setAttribute("content",d);g=true}function b(){l.setAttribute("content",h);g=false}function e(m){c=Math.abs(j.orientation);k=Math.abs(m.gamma);if(k>8&&c===0){if(g){b()}}else{if(!g){f()}}}j.addEventListener("orientationchange",f,false);j.addEventListener("deviceorientation",e,false)})(this);
+</script>
+
+  
+</body>
+</html>
+

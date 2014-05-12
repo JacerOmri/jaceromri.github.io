@@ -1,0 +1,251 @@
+
+<!DOCTYPE html>
+<!--[if lt IE 7]> <html class="no-js lt-ie9 lt-ie8 lt-ie7 ie" lang="en"> <![endif]-->
+<!--[if IE 7]>    <html class="no-js lt-ie9 lt-ie8 ie" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="no-js lt-ie9 ie" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+	<title>Introduction to node.js</title>
+	<meta name="author" content="Jacer Omri">
+	<link href='/assets/themes/the-minimum/css/style.css' rel="stylesheet" media="all">
+	<link href="http://feeds.feedburner.com/" rel="alternate" title="Introduction to node.js" type="application/atom+xml">
+	<script src="http://cdnjs.cloudflare.com/ajax/libs/modernizr/2.0.6/modernizr.min.js"></script>
+</head>
+<body>
+
+<div id="page" class="hentry">
+	<header class="the-header">
+		<div class="unit-head">
+			<div class="unit-inner unit-head-inner">
+				<p class="logo"><a href="/">Jacer Omri Blog</a></p>
+				<nav class="nav-global">
+					<ul>
+						<li class="archive"><a href="/archive.html">archive</a></li>
+						<li class="page"><a href="/pages.html">pages</a></li>
+						<li class="category"><a href="/categories.html">categories</a></li>
+						<li class="tag"><a href="/tags.html">tags</a></li>
+					</ul>
+				</nav>
+			</div><!-- unit-inner -->
+		</div><!-- unit-head -->
+	</header>
+	<div class="body" role="main">
+		<div class="unit-body">
+			<div class="unit-inner unit-body-inner">
+				<div class="entry-content">
+					
+<article class="unit-article layout-post">
+	<div class="unit-inner unit-article-inner">
+		<div class="content">
+			<header>
+				<div class="unit-head">
+					<div class="unit-inner unit-head-inner">
+						<h1 class="h2 entry-title">Introduction to node.js</h1>
+					</div><!-- unit-inner -->
+				</div><!-- unit-head -->
+			</header>
+
+			<div class="bd">
+				<div class="entry-content">
+					<p>I guess everybody in the field heard about node.js already, but likely most of them have ignored it, just like i did, questioning its future without getting into its details. Well, i do know now that i have made a mistake by doing so. Lately, i have gone through node.js documentations and list of addons, and i have to say it: it's incredibly awesome! And here is why.<!--more--> Basically, what node.js has to offer is a hole new horizon for what network applications are. Its creator, <a class="zem_slink" title="Node.js" href="http://en.wikipedia.org/wiki/Node.js" target="_blank" rel="wikipedia">Ryan Dahl</a>, needed a to create web sites with push capabilities as seen in web applications like <a class="zem_slink" title="Gmail" href="http://gmail.com" target="_blank" rel="homepage">Gmail</a>. after several trials, he has chosen <a class="zem_slink" title="JavaScript" href="http://en.wikipedia.org/wiki/JavaScript" target="_blank" rel="wikipedia">JavaScript</a> because it didn't have an IO api, so he could have the freedom in defining one as he wishes.</p>
+<p>[caption id="" align="alignright" width="635"]<img alt="Ryan Dahl" src="http://berb.github.io/nodejs-talk-chaosseminar/assets/images/ryah.jpg" width="635" height="654" /> Ryan Dahl[/caption]</p>
+<p>He started developing it with some main points in mind:</p>
+<ul>
+<li>event driven mechanism</li>
+<li><a class="zem_slink" title="Asynchronous I/O" href="http://en.wikipedia.org/wiki/Asynchronous_I/O" target="_blank" rel="wikipedia">non blocking IO</a></li>
+<li><a class="zem_slink" title="Scalability" href="http://en.wikipedia.org/wiki/Scalability" target="_blank" rel="wikipedia">Scalability</a></li>
+<li>performance and speed</li>
+</ul>
+<p>JavaScript would obviously seem to be the best option to create an event driven technology. the fact that node.js is event driven, and that it has a non blocking IO is pretty connected, the event mechanism is used to make callbacks everywhere, so a basic file read instruction for instance, can be non blocking by setting what to do with the data grabbed from the file as a <a class="zem_slink" title="Callback (computer programming)" href="http://en.wikipedia.org/wiki/Callback_%28computer_programming%29" target="_blank" rel="wikipedia">callback function</a>, so that while the system is reading the file, it can continue executing the script and serve the data when it comes. Take thin example:</p>
+<pre>var fs = require('fs');
+var contents = fs.readFileSync('users','utf8');
+console.log(contents);
+console.log("Hello Node\n");
+var contents = fs.readFileSync('hosts','utf8');
+console.log(contents);
+console.log("Hello again!");</pre>
+<p>this code is blocking, means every instruction is executed only if its predecessor  is fully executed. This approach is what believed to be non network friendly, the node.js way to do it is:</p>
+<pre>var fs = require('fs');
+var contents = fs.readFile('./users','utf8', function(err,contents){
+     console.log(contents);
+});
+console.log("Hello Node\n");
+var contents = fs.readFile('./hosts','utf8', function(err,contents){
+     console.log(contents);
+});
+console.log("Hello again!");</pre>
+<p>You have to know that, when you try this code, you will get an unexpected result, the 2 instructions that do not depend on the <a class="zem_slink" title="File system" href="http://en.wikipedia.org/wiki/File_system" target="_blank" rel="wikipedia">file system</a> read call are executed in the first place,</p>
+<pre>Hello Node
+Hello again!
+list of users...
+list of hosts...</pre>
+<p>this weird order comes from that the list of users and the list of hosts have to be read first, so that would take time, so we printed them in the callback of the read function, in other words, read the file, once done echo it, but meanwhile, do something else.</p>
+<p>Best part of node.js is that it doesn't rely on an external software to do the web server part, it's the web server, the website and everything in the same time! that allows to build fast, scalable and flexible web applications with minimum overhead.</p>
+<p>But what about performance? node.js is built on top of <a class="zem_slink" title="Google" href="http://google.com" target="_blank" rel="homepage">Google's</a> <a class="zem_slink" title="V8 (JavaScript engine)" href="http://code.google.com/p/v8" target="_blank" rel="homepage">V8 JavaScript engine</a>, the libuv platform abstraction layer, which are written in C++ and C, the world fastest programming languages. That would have huge effect on the time and resources needed in order for node.js to interpret the code. I don't think there would be a better solution.</p>
+<h2>Conclusion</h2>
+<p>node.js is really useful and it has a great future. It's easy to learn and everyone should at least know about it. I'll be posting tutorials and open source projects I have written using node.js, so follow me and stay tuned! Meanwhile take a look at <a href="http://nodejs.org/" target="_blank">node.js website</a>.</p>
+<p>&nbsp;</p>
+
+					<div class="meta">
+						<p class="date-publish">
+							Published: 
+							<date class="date-pub" title="2013-07-14T00:00:00+01:00" datetime="2013-07-14T00:00:00+01:00" pubdate>
+							<span class="month"><abbr>July</abbr></span>
+							<span class="day">14</span>
+							<span class="year">2013</span>
+							</date>
+						</p>
+						<ul class="list-category list-linear">
+							<li class="list-head">category: </li>
+							
+							
+
+
+  
+     
+    	<li><a href="/categories.html#Tutorials-ref">
+    		Tutorials <span>9</span>
+    	</a></li>
+    
+  
+
+
+						</ul>
+						<ul class="list-tag list-linear">
+							<li class="list-head">tags: </li>
+							
+							
+
+
+  
+     
+    	<li><a href="/tags.html#Asynchronous I/O-ref">Asynchronous I/O <span>1</span></a></li>
+     
+    	<li><a href="/tags.html#Callback (computer programming)-ref">Callback (computer programming) <span>1</span></a></li>
+     
+    	<li><a href="/tags.html#JavaScript-ref">JavaScript <span>3</span></a></li>
+     
+    	<li><a href="/tags.html#Node.js-ref">Node.js <span>3</span></a></li>
+     
+    	<li><a href="/tags.html#Programming-ref">Programming <span>2</span></a></li>
+     
+    	<li><a href="/tags.html#Ryan Dahl-ref">Ryan Dahl <span>1</span></a></li>
+     
+    	<li><a href="/tags.html#Scalability-ref">Scalability <span>1</span></a></li>
+     
+    	<li><a href="/tags.html#Web application-ref">Web application <span>1</span></a></li>
+    
+  
+
+
+
+						</ul>
+					</div><!-- meta -->
+				</div><!-- entry-content -->
+				<div class="misc-content">
+					<div class="social">
+						<ul class="list-linear">
+							<li><div class="twitter-tweet"><a href="https://twitter.com/share" class="twitter-share-button" data-count="horizontal" data-via="JacerOmri" data-lang="en">Tweet</a></div></li>
+							<li><div class="twitter-follow"><a href="https://twitter.com/JacerOmri" class="twitter-follow-button" data-show-count="false" data-lang="en"></a></div></li>
+							<li><div class="g-plusone" data-size="medium"></div></li>
+							<li><div class="fb-like" data-href="/2013/07/14/introduction-to-node-js" data-send="false" data-layout="button_count" data-width="450" data-show-faces="false" data-font="verdana"></div></li>
+						</ul>
+					</div>
+					
+					
+
+
+  <div id="disqus_thread"></div>
+<script type="text/javascript">
+    var disqus_developer = 1;
+    var disqus_shortname = 'jaceromriblog'; // required: replace example with your forum shortname
+    
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a>
+
+
+
+
+				</div><!-- misc-content -->
+				
+			</div><!-- bd -->
+			<footer class="unit-foot">
+				<div class="unit-inner unit-foot-inner">
+					<nav class="pagination">
+						<ul>
+							
+							<li class="prev"><a class="internal" rel="prev"  href="/2013/07/13/sed-command-tips-and-tricks" title="View Sed command: tips and tricks">&laquo; Sed command: tips and tricks</a></li>
+							
+							
+							<li class="pipe"> | </li>
+							
+							
+							<li class="next"><a class="internal" rel="next"  href="/2013/07/15/node-js-first-steps" title="View Node.js: First Steps">Node.js: First Steps &raquo;</a></li>
+							
+						</ul>
+					</nav>
+					<p class="gotop">
+						<a href="#page">Back to Top</a>
+					</p>
+				</div>
+			</footer>
+
+		</div><!-- content -->
+	</div><!-- unit-inner -->
+</article>
+
+
+				</div>
+			</div><!-- unit-inner -->
+		</div><!-- unit-body -->
+	</div><!-- body -->
+	<footer class="the-footer">
+		<div class="unit-foot">
+			<div class="unit-inner unit-foot-inner">
+				<div class="misc vcard">
+					<h4>about</h4>
+					<ul>
+						<li class="contact"><address><span class="author fn n">Jacer Omri</span> - <span class="fn email">jokerhacker.jacer@gmail.com</span></address></li>
+						<li class="github"><a href="http://github.com/JacerOmri/" rel="me">github.com/JacerOmri</a></li>
+						<li class="twitter"><a href="http://twitter.com/JacerOmri/" rel="me">twitter.com/JacerOmri</a></li>
+						<li class="rss"><a href="http://feeds.feedburner.com/JacerOmriBlog">Subscribe to RSS Feed</a></li>
+					</ul>
+				</div><!-- misc -->
+				<p class="licence">
+					Theme: <a href="http://layouts-the.me">the_minimum</a> based on <a href="http://jekyllbootstrap.com/">Jekyll-bootstrap</a>.<br>
+					Powered by <a href="https://github.com/mojombo/jekyll">Jekyll</a>.
+				</p>
+			</div><!-- unit-foot-inner -->
+		</div><!-- unit-foot -->
+	</footer>
+</div><!-- page -->
+<script>
+	(function(d, s) {
+		var js, fjs = d.getElementsByTagName(s)[0], load = function(url, id) {
+		if (d.getElementById(id)) {return;}
+		js = d.createElement(s); js.src = url; js.id = id;
+		fjs.parentNode.insertBefore(js, fjs);
+		};
+	load('//platform.twitter.com/widgets.js', 'tweetjs');
+	load('https://apis.google.com/js/plusone.js', 'gplus1js'); // Checkout http://j.mp/ApDgMr for usage html for this is <div class="g-plusone" data-size="medium"></div>
+	load('//connect.facebook.net/en_US/all.js#xfbml=1', 'fbjssdk'); // Checkout http://j.mp/wZw2xR for using open graph protorol html for this is <div class="fb-like" data-href="/2013/07/14/introduction-to-node-js" data-send="false" data-layout="button_count" data-width="450" data-show-faces="false" data-font="verdana"></div>
+	}(document, 'script'));
+</script>
+<script>
+/*! A fix for the iOS orientationchange zoom bug.Script by @scottjehl, rebound by @wilto. MIT License.*/
+(function(j){var i=j.document;if(!i.querySelectorAll){return}var l=i.querySelectorAll("meta[name=viewport]")[0],a=l&&l.getAttribute("content"),h=a+", maximum-scale=1.0",d=a+", maximum-scale=10.0",g=true,c=j.orientation,k=0;if(!l){return}function f(){l.setAttribute("content",d);g=true}function b(){l.setAttribute("content",h);g=false}function e(m){c=Math.abs(j.orientation);k=Math.abs(m.gamma);if(k>8&&c===0){if(g){b()}}else{if(!g){f()}}}j.addEventListener("orientationchange",f,false);j.addEventListener("deviceorientation",e,false)})(this);
+</script>
+
+  
+</body>
+</html>
+
